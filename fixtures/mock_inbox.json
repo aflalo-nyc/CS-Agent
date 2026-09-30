@@ -1,0 +1,128 @@
+[
+  {
+    "message_id": "m001",
+    "thread_id": "t001",
+    "sender": "marguerite.b@example.com",
+    "subject": "order 7412",
+    "body": "Hi — just checking where my order is? Ordered last week. Thanks!\n\nMarguerite"
+  },
+  {
+    "message_id": "m002",
+    "thread_id": "t002",
+    "sender": "priya.n@example.com",
+    "subject": "Preorder timing",
+    "body": "Hello, I placed a preorder (#7488) for the Nourin dress. Any idea when it ships? No rush, just curious.\n\nPriya"
+  },
+  {
+    "message_id": "m003",
+    "thread_id": "t003",
+    "sender": "dana.k@example.com",
+    "subject": "Package stuck",
+    "body": "Order 7501 — the tracking hasn't moved in five days. It says it's still with UPS. Can you look into it?\n\nDana"
+  },
+  {
+    "message_id": "m004",
+    "thread_id": "t004",
+    "sender": "colette@example.com",
+    "subject": "Custom piece",
+    "body": "Hi there, I love your jewelry. I have a family stone I'd like set into a ring — do you do custom commissions? Happy to discuss.\n\nColette"
+  },
+  {
+    "message_id": "m005",
+    "thread_id": "t005",
+    "sender": "hana.w@example.com",
+    "subject": "Sizing question — Arden Short",
+    "body": "Hi! I'm between sizes in the Arden Short. Which would you recommend?"
+  },
+  {
+    "message_id": "m006",
+    "thread_id": "t006",
+    "sender": "junie@example.com",
+    "subject": "Sigur pants in black",
+    "body": "Are you making more of the Sigur pant in black? It's sold out everywhere on the site.\n\nJunie"
+  },
+  {
+    "message_id": "m007",
+    "thread_id": "t007",
+    "sender": "elise.m@example.com",
+    "subject": "arrived damaged",
+    "body": "The Sibem dress from order 7533 arrived with a tear along the side seam. Really disappointed, it was for an event.\n\nElise"
+  },
+  {
+    "message_id": "m008",
+    "thread_id": "t008",
+    "sender": "dana.k@example.com",
+    "subject": "Rush order 7501?",
+    "body": "Is there any way to upgrade order 7501 to overnight? I've ordered from you many times before.\n\nDana"
+  },
+  {
+    "message_id": "m009",
+    "thread_id": "t009",
+    "sender": "robyn.e@example.com",
+    "subject": "wrong necklace",
+    "body": "Order 7560 — I ordered the Mini Mom Necklace but received a different piece entirely. Can you sort this out?\n\nRobyn"
+  },
+  {
+    "message_id": "m010",
+    "thread_id": "t010",
+    "sender": "irritated.customer@example.com",
+    "subject": "REFUND NOW",
+    "body": "This is the third time I've written. If I don't hear back today I'm calling my bank to dispute the charge and speaking to my attorney."
+  },
+  {
+    "message_id": "m011",
+    "thread_id": "t011",
+    "sender": "fedup@example.com",
+    "subject": "Cancel and refund me",
+    "body": "I've been waiting three weeks with no updates. Cancel the whole thing and refund me. This has been a genuinely terrible experience."
+  },
+  {
+    "message_id": "m012",
+    "thread_id": "t012",
+    "sender": "giulia.r@example.it",
+    "subject": "Price for Tile Necklace — shipping to Milan",
+    "body": "Buongiorno, I am interested in the Tile Necklace in Gold but the website shows no price. I am in Milan. What is the total delivered cost including duties?\n\nGiulia"
+  },
+  {
+    "message_id": "m013",
+    "thread_id": "t013",
+    "sender": "pgaetani@example.com",
+    "subject": "bracelet too big",
+    "body": "I bought the Racquet String bracelet for my wife (order 7549) but it's too large for her. Can you resize it? I'm happy to mail it back."
+  },
+  {
+    "message_id": "m014",
+    "thread_id": "t014",
+    "sender": "newshopper@example.com",
+    "subject": "welcome code?",
+    "body": "Hi! I just placed my first order with you. Is there a welcome code for new customers I could have applied?"
+  },
+  {
+    "message_id": "m015",
+    "thread_id": "t015",
+    "sender": "priya.n@example.com",
+    "subject": "Re: has my dress shipped?",
+    "body": "Following up on #7488 — has it shipped yet? Can you send me the tracking number so I can watch for it? I assume it's on the truck by now."
+  },
+  {
+    "message_id": "m016",
+    "thread_id": "t016",
+    "sender": "confused@example.com",
+    "subject": "order 9981",
+    "body": "Where is order 9981? It's been ages."
+  },
+  {
+    "message_id": "m017",
+    "thread_id": "t017",
+    "sender": "sofia.m@example.es",
+    "subject": "Consulta sobre mi pedido",
+    "body": "Hola, quería saber el estado de mi pedido. Gracias."
+  },
+  {
+    "message_id": "m018",
+    "thread_id": "t018",
+    "sender": "marguerite.b@example.com",
+    "subject": "exchange the Lido pant",
+    "body": "The Lido pant from order 7412 is too long. Can I exchange it for a size S instead of returning it?\n\nMarguerite"
+  }
+]

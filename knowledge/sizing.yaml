@@ -1,0 +1,631 @@
+# Finished-garment measurements from Production's size folder.
+# Generated from the Drive folder in _meta.source_folder — see SIZING.md before using.
+# Values in measurements_in are INCHES. Styles converted from cm keep the original
+# under measurements_cm so nothing is lost to rounding.
+
+_meta:
+  source_folder: https://drive.google.com/drive/folders/1genAmeiLls_iITRbGPVU6TAxDcOOwo7D
+  provided_by: Production
+  imported: '2026-08-21'
+  measurement_basis: FINISHED GARMENT, not body measurements
+  styles_available: 8
+  styles_withheld: 3
+usage_policy:
+  may_quote_garment_measurements: true
+  may_recommend_a_size: false
+  why: These are finished-garment measurements. Quoting one is a fact and is checkable. Turning it into
+    'you should take a 6' requires her body measurements, an ease assumption, and a judgement about how
+    she likes things to fit — none of which we have. A wrong size recommendation costs a return and the
+    customer's confidence, so the drafter states measurements and lets her choose.
+  always_state_units: true
+  always_say_it_is_the_garment_not_the_body: true
+styles:
+  aire_dress:
+    name: Aire Dress
+    style_number: DD026
+    fabric: 19mm silk satin
+    source: AIRE_DRESS_GRADED_SPEC.xlsx
+    spec_type: released graded spec
+    native_unit: in
+    size_system: numeric
+    sizes:
+    - '0'
+    - '2'
+    - '4'
+    - '6'
+    - '8'
+    - '10'
+    base_size: '4'
+    measurements_in:
+      chest_circ:
+      - 26.5
+      - 27.5
+      - 28.5
+      - 29.5
+      - 30.5
+      - 31.5
+      waist_circ:
+      - 26.125
+      - 27.125
+      - 28.125
+      - 29.125
+      - 30.125
+      - 31.125
+      hi_hip:
+      - 31
+      - 32
+      - 33
+      - 34
+      - 35
+      - 36
+      low_hip:
+      - 33.5
+      - 34.5
+      - 35.5
+      - 36.5
+      - 37.5
+      - 38.5
+      sweep:
+      - 47
+      - 48
+      - 49
+      - 50
+      - 51
+      - 52
+      front_length_hps_to_waist:
+      - 59.5
+      - 59.75
+      - 60
+      - 60.25
+      - 60.5
+      - 60.75
+  bexley_dress:
+    name: Bexley Dress
+    style_number: DD028
+    fabric: 19mm silk satin
+    source: BEXLEY_DRESS_GRADED_SPEC.xlsx
+    spec_type: released graded spec
+    native_unit: in
+    size_system: numeric
+    sizes:
+    - '0'
+    - '2'
+    - '4'
+    - '6'
+    - '8'
+    - '10'
+    base_size: '4'
+    measurements_in:
+      chest_circ:
+      - 44.5
+      - 45.5
+      - 46.5
+      - 47.5
+      - 48.5
+      - 49.5
+      sweep:
+      - 57
+      - 58
+      - 59
+      - 60
+      - 61
+      - 62
+      front_length:
+      - 31.125
+      - 31.375
+      - 31.625
+      - 31.875
+      - 32.125
+      - 32.375
+      back_length:
+      - 33.625
+      - 33.875
+      - 34.125
+      - 34.375
+      - 34.625
+      - 34.875
+    gaps:
+    - no waist or hip measurement in the spec
+  nourin_dress:
+    name: Nourin Dress
+    style_number: DD025-352
+    fabric: 23mm silk twill
+    source: Nourin Dress DD025-352 (1).pdf
+    spec_type: graded spec
+    native_unit: in
+    size_system: alpha
+    sizes:
+    - XS
+    - S
+    - M
+    - L
+    - XL
+    measurements_in:
+      front_chest_width:
+      - 16.5
+      - 17.5
+      - 18.5
+      - 19.5
+      - 20.5
+      waist_circ:
+      - 26
+      - 27
+      - 28
+      - 29
+      - 30
+      low_hip_width:
+      - 31
+      - 32
+      - 33
+      - 34
+      - 35
+      sweep_circ:
+      - 28
+      - 29
+      - 30
+      - 31
+      - 32
+      side_seam_length:
+      - 47.75
+      - 48
+      - 48.25
+      - 48.5
+      - 48.75
+    gaps:
+    - chest and hip are recorded as WIDTH, waist as CIRCUMFERENCE — do not compare them to each other
+      without checking the spec
+  tibet_top:
+    name: Tibet Top
+    style_number: DD031-366
+    fabric: Fortuny plissé
+    source: Tibet Top DD031-366.pdf
+    spec_type: graded spec
+    native_unit: in
+    size_system: alpha
+    sizes:
+    - XS
+    - S
+    - M
+    - L
+    base_size: M
+    measurements_in:
+      neckline_circ:
+      - 16.375
+      - 17.125
+      - 17.875
+      - 18.625
+      cf_length:
+      - 17.875
+      - 18.375
+      - 18.875
+      - 19.375
+      cb_length:
+      - 20.25
+      - 20.75
+      - 21.25
+      - 21.75
+      side_seam_length:
+      - 10.75
+      - 11
+      - 11.25
+      - 11.5
+      across_front:
+      - 9.25
+      - 9.75
+      - 10.25
+      - 10.75
+      across_back:
+      - 10.75
+      - 11.25
+      - 11.75
+      - 12.25
+      sweep:
+      - 115.5
+      - 117.5
+      - 119.5
+      - 121.5
+    gaps:
+    - no chest, waist or hip circumference — a pleated style, so the spec measures differently. Cannot
+      answer 'will this fit my bust' from this file
+  safira_top:
+    name: Safira Top
+    style_number: TT017-088
+    fabric: null
+    source: Safira Top TT017-088 (1).pdf
+    spec_type: graded spec
+    native_unit: in
+    size_system: alpha
+    sizes:
+    - XS
+    - S
+    - M
+    - L
+    - XL
+    measurements_in:
+      front_chest_width:
+      - 12.5625
+      - 13.5625
+      - 14.5625
+      - 15.5625
+      - 16.5625
+      sweep_circ:
+      - 47.5
+      - 49.5
+      - 51.5
+      - 53.5
+      - 55.5
+      back_neckline:
+      - 14.875
+      - 15.375
+      - 15.875
+      - 16.375
+      - 16.875
+      right_side_seam:
+      - 12.6875
+      - 13
+      - 13.3125
+      - 13.625
+      - 13.9375
+      left_side_seam:
+      - 10.6875
+      - 11
+      - 11.3125
+      - 11.625
+      - 11.9375
+    gaps:
+    - asymmetric style — left and right side seams differ by design, that is not an error
+  dara:
+    name: Dara
+    style_number: null
+    fabric: null
+    season: Fall 2026/27
+    source: DARA tabella misure.pdf
+    spec_type: scheda misure produzione (finished garment)
+    native_unit: cm
+    size_system: alpha
+    sizes:
+    - XXS
+    - XS
+    - S
+    - M
+    - L
+    - XL
+    measurements_in:
+      bust_circ:
+      - 36.22
+      - 37.8
+      - 39.37
+      - 41.34
+      - 43.7
+      - 46.06
+      waist_circ:
+      - 34.65
+      - 36.22
+      - 37.8
+      - 39.76
+      - 42.13
+      - 44.49
+      hip_circ:
+      - 37.01
+      - 38.58
+      - 40.16
+      - 42.13
+      - 44.49
+      - 46.85
+      across_shoulder:
+      - 17.95
+      - 18.35
+      - 18.74
+      - 19.23
+      - 19.82
+      - 20.41
+      bicep:
+      - 13.78
+      - 14.17
+      - 14.57
+      - 15.04
+      - 15.63
+      - 16.22
+      sleeve_length_from_shoulder:
+      - 22.05
+      - 22.24
+      - 22.44
+      - 22.64
+      - 22.87
+      - 23.11
+      body_length:
+      - 28.07
+      - 28.31
+      - 28.54
+      - 28.82
+      - 29.13
+      - 29.45
+    measurements_cm:
+      bust_circ:
+      - 92
+      - 96
+      - 100
+      - 105
+      - 111
+      - 117
+      waist_circ:
+      - 88
+      - 92
+      - 96
+      - 101
+      - 107
+      - 113
+      hip_circ:
+      - 94
+      - 98
+      - 102
+      - 107
+      - 113
+      - 119
+      across_shoulder:
+      - 45.6
+      - 46.6
+      - 47.6
+      - 48.85
+      - 50.35
+      - 51.85
+      bicep:
+      - 35
+      - 36
+      - 37
+      - 38.2
+      - 39.7
+      - 41.2
+      sleeve_length_from_shoulder:
+      - 56
+      - 56.5
+      - 57
+      - 57.5
+      - 58.1
+      - 58.7
+      body_length:
+      - 71.3
+      - 71.9
+      - 72.5
+      - 73.2
+      - 74.0
+      - 74.8
+  livia:
+    name: Livia
+    style_number: null
+    fabric: null
+    season: Fall 2026/27
+    source: LIVIA tabella misure.pdf
+    spec_type: scheda misure produzione (finished garment)
+    native_unit: cm
+    size_system: alpha
+    sizes:
+    - XXS
+    - XS
+    - S
+    - M
+    - L
+    - XL
+    measurements_in:
+      bust_circ:
+      - 43.31
+      - 44.88
+      - 46.46
+      - 48.43
+      - 50.79
+      - 53.15
+      waist_circ:
+      - 42.52
+      - 44.09
+      - 45.67
+      - 47.64
+      - 50.0
+      - 52.36
+      hip_circ:
+      - 42.13
+      - 43.7
+      - 45.28
+      - 47.24
+      - 49.61
+      - 51.97
+      across_shoulder:
+      - 19.88
+      - 20.28
+      - 20.67
+      - 21.16
+      - 21.75
+      - 22.34
+      bicep:
+      - 17.32
+      - 17.72
+      - 18.11
+      - 18.58
+      - 19.17
+      - 19.76
+      sleeve_length_from_shoulder:
+      - 23.62
+      - 23.74
+      - 23.9
+      - 24.06
+      - 24.21
+      - 24.37
+      body_length:
+      - 33.78
+      - 34.02
+      - 34.25
+      - 34.53
+      - 34.84
+      - 35.16
+    measurements_cm:
+      bust_circ:
+      - 110
+      - 114
+      - 118
+      - 123
+      - 129
+      - 135
+      waist_circ:
+      - 108
+      - 112
+      - 116
+      - 121
+      - 127
+      - 133
+      hip_circ:
+      - 107
+      - 111
+      - 115
+      - 120
+      - 126
+      - 132
+      across_shoulder:
+      - 50.5
+      - 51.5
+      - 52.5
+      - 53.75
+      - 55.25
+      - 56.75
+      bicep:
+      - 44
+      - 45
+      - 46
+      - 47.2
+      - 48.7
+      - 50.2
+      sleeve_length_from_shoulder:
+      - 60
+      - 60.3
+      - 60.7
+      - 61.1
+      - 61.5
+      - 61.9
+      body_length:
+      - 85.8
+      - 86.4
+      - 87.0
+      - 87.7
+      - 88.5
+      - 89.3
+  viretta:
+    name: Viretta
+    style_number: null
+    fabric: null
+    season: Fall 2026/27
+    source: VIRETTA tabella misure (2).pdf
+    spec_type: scheda misure produzione (finished garment)
+    native_unit: cm
+    size_system: alpha
+    sizes:
+    - XXS
+    - XS
+    - S
+    - M
+    - L
+    - XL
+    measurements_in:
+      across_shoulder:
+      - 15.65
+      - 16.04
+      - 16.44
+      - 16.93
+      - 17.52
+      - 18.11
+      sleeve_length_from_shoulder:
+      - 24.61
+      - 24.8
+      - 25.0
+      - 25.2
+      - 25.43
+      - 25.67
+      sleeve_length_from_cb:
+      - 32.2
+      - 32.68
+      - 33.15
+      - 33.66
+      - 34.29
+      - 34.92
+      body_length:
+      - 29.8
+      - 30.04
+      - 30.28
+      - 30.55
+      - 30.87
+      - 31.18
+    measurements_cm:
+      across_shoulder:
+      - 39.75
+      - 40.75
+      - 41.75
+      - 43.0
+      - 44.5
+      - 46.0
+      sleeve_length_from_shoulder:
+      - 62.5
+      - 63.0
+      - 63.5
+      - 64.0
+      - 64.6
+      - 65.2
+      sleeve_length_from_cb:
+      - 81.8
+      - 83.0
+      - 84.2
+      - 85.5
+      - 87.1
+      - 88.7
+      body_length:
+      - 75.7
+      - 76.3
+      - 76.9
+      - 77.6
+      - 78.4
+      - 79.2
+    review_needed:
+    - the 'hip' row reads 55.7-80.7cm across the range, which is too small to be a body circumference
+      — likely a half measurement or a different point. EXCLUDED until production confirms
+    gaps:
+    - no bust or waist measurement in the file
+withheld:
+  aksel_pant:
+    name: Aksel Pant
+    style_number: AL26AAPA008Z01
+    source: Aksel Pant AL26AAPA008Z01 ... TABELLA PER APPROVAZIONE (2).pdf
+    sizes:
+    - '0'
+    - '2'
+    - '4'
+    - '6'
+    - '8'
+    - '10'
+    - '12'
+    - '14'
+    reason: The file contains GRADING DELTAS only (-3, 0, +4 ...), not absolute measurements. There is
+      no base-size spec here to apply them to, so no actual waist, hip or inseam can be stated. Ask production
+      for the base size 4 spec.
+  audra_jacket:
+    name: Audra Jacket
+    style_number: OJ013
+    fabric: heavy viscose silk
+    source: 513 - AUDRA JACKET SPEC - MISURE.xlsx
+    sizes:
+    - XS
+    - S
+    - M
+    - L
+    reason: 'Development workbook, not a released spec: proto/PPS/target columns sit alongside the graded
+      columns and a blank BLAZER template is appended to the same sheet. The graded chest/bust column
+      reads 21-25in, which is a half measurement or an error, not a jacket chest circumference. Needs
+      a released graded spec.'
+  valeo_bomber:
+    name: Valeo Bomber
+    style_number: '1020'
+    sizes:
+    - XS
+    - S
+    - M
+    - L
+    - XL
+    source: 1020 ELWEN BOMBER - Full size spec for approval (Updated on 29.7.2026).xlsx
+    reason: FILE NAME AND CONTENTS DISAGREE — the file is called ELWEN BOMBER, the sheet says VALEO BOMBER.
+      Until someone says which style this is, quoting it risks giving a customer measurements for a different
+      garment. Also marked 'DEVELOPMENT SPEC', not released.

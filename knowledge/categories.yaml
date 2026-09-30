@@ -1,0 +1,689 @@
+# CS taxonomy — every inbound scenario in the CS Guide deck.
+# Template language is lifted from the deck, with {placeholders} that may ONLY be filled
+# from retrieved Shopify facts.
+#
+# tier (design doc §2.9):
+#   draft   — Tier 1. Informational, no money and no policy exception. Label "auto-drafted".
+#   manager — Tier 2. Drafted, but gated on a human before it goes out. Label
+#             "needs-manager-approval". Two distinct reasons, see `gate`:
+#               policy — commits AFLALO to an exception (deck says get approval first)
+#               action — the template asserts something already done; the human must DO it
+#                        (ship, refund, attach a label, add to the waitlist) and then send
+#   human   — Tier 3. No draft. Reached ONLY via the safety net, an escalating signal, high
+#             risk, a failed Shopify lookup, or a verify violation — never because a
+#             template happened to be hard. `tier: human` here is reserved for scenarios
+#             with no documented policy at all.
+#
+# needs_order: Shopify lookup required; a failed lookup forces needs-human.
+
+categories:
+
+  # ---------------------------------------------------------------- Tier 1 — draft freely
+
+  where_is_my_order:
+    tier: draft
+    needs_order: true
+    fields: [fulfillment_status, tracking_number, tracking_url, estimated_delivery]
+    approach: "Quick and direct. If there's a delay you know about, flag it here — don't wait for her to follow up."
+    template: |
+      Hi {first_name},
+
+      Your order is {fulfillment_status}. here's your tracking: {tracking_url}
+
+      It's estimated to arrive by {estimated_delivery}. If anything changes before then,
+      I'll reach out directly.
+
+      Warmly, Eva
+
+  preorder_ship_timing:
+    tier: draft
+    needs_order: true
+    fields: [estimated_ship_date, fulfillment_status, tracking_number, tracking_url]
+    approach: "Be honest about timing. If there's a delay from what was communicated, say so directly. She's excited, not upset — match that energy. Give a real date, never a vague 'soon'."
+    template: |
+      Hi {first_name},
+
+      Thanks for checking in. we're so excited for you to receive it.
+
+      Your order is estimated to ship {estimated_ship_date}. You'll receive tracking as soon
+      as it's on its way. If anything changes before then, I'll reach out to you directly.
+
+      Warmly, Eva
+
+  order_status_shipping_timeline:
+    tier: draft
+    needs_order: true
+    fields: [estimated_ship_date, fulfillment_status, estimated_delivery, tracking_number, tracking_url]
+    approach: "She's excited, not upset — match that energy. Give a real date or timeframe, never a vague 'soon'. 'If anything changes, I'll reach out' is a commitment."
+    template: |
+      Hi {first_name},
+
+      Thanks for checking in. we're so excited for you to receive it.
+
+      Your order is estimated to ship {estimated_ship_date}. You'll receive tracking as soon
+      as it's on its way. If anything changes before then, I'll reach out to you directly.
+
+      Warmly, Eva
+
+  delayed_package_carrier:
+    tier: manager
+    gate: action
+    needs_order: true
+    fields: [tracking_number, tracking_url, carrier, carrier_status, carrier_location]
+    approach: |
+      Move fast, never respond empty-handed. Do NOT ask her to contact the carrier — you own this.
+      Always give a specific follow-up time. Only name a facility if carrier_location was retrieved;
+      otherwise say "due to a transit delay on their end" (the deck's own alternative wording).
+    template: |
+      Hi {first_name},
+
+      Thank you so much for flagging this, and I'm sorry for the delay. I've looked into your
+      order and can see it's currently held up with {carrier}{carrier_location_clause}.
+
+      I've already been in touch with them directly and am pushing to get it moving as quickly
+      as possible. I'll keep a close eye on the tracking and will follow up with you by
+      {followup_time} with an update, so you won't have to chase this.
+
+      Thank you for your patience. I'll be in touch soon.
+
+      Warmly, Eva
+    note: |
+      Action gate: the deck's template says "I've already been in touch with them directly" —
+      that is a real action a human must take before this goes out, same class as shipping a
+      replacement. Found by the live run; it was Tier 1 until layer 2 flagged the claim.
+
+  final_sale_return:
+    tier: draft
+    needs_order: true
+    fields: [line_items, item]
+    hard_no: true
+    approach: "Hold the line — final sale is non-negotiable, and no store credit here because it sets a precedent. This is one of the only times 'unfortunately' is appropriate. Keep it short."
+    template: |
+      Hi {first_name},
+
+      Final sale items aren't eligible for return or store credit. we communicate this at
+      checkout and want it to always be clear upfront.
+
+      Warmly, Eva
+    note: "Draftable because it commits nothing and states no amount. If she pushes back, the angry/refund signals escalate it on the next message."
+
+  damaged_item:
+    tier: draft
+    needs_order: false
+    approach: |
+      Same energy as wrong item: our problem to solve, not hers to navigate. Warm but
+      efficient, not overly apologetic.
+
+      If she has NOT shown the damage yet: ask for one quick photo, nothing else.
+
+      If photos are attached / the defect is confirmed (the manager-gated path), LW's
+      flow: empathize in one line ("this is not the quality standard we hold ourselves
+      to"), say the return label has been made for the defective piece, then check
+      RETRIEVED DATA stock: her size in stock, offer a replacement with complimentary
+      overnight shipping and ask her to confirm the delivery address; out of stock,
+      suggest alternatives instead. The approver makes the label and ships before sending.
+    template: |
+      Hi {first_name},
+
+      Thank you for letting us know, and I'm sorry your piece arrived this way.
+
+      Could you send over a quick photo of the damage? As soon as I have it, I'll get a
+      replacement shipped out to you right away, along with a prepaid return label for the
+      damaged piece.
+
+      Warmly, Eva
+    note: "Draftable because it only requests a photo. If she already attached photos, the classifier sets photos_already_attached and it becomes an action-required reship."
+
+  return_how_to:
+    tier: draft
+    needs_order: false
+    approach: |
+      She's asking how to make a return (not disputing eligibility). LW's standard reply,
+      verbatim shape: point her to the returns portal link, offer questions, stop. For
+      JEWELRY returns the portal doesn't apply: she emails us instead, so say that when
+      the piece is jewelry.
+    template: |
+      Hello {first_name},
+
+      Thanks for reaching out. You can process your return via this link:
+      https://returns.aflalonyc.com/#/
+
+      If you have any questions, please let me know!
+
+      Warmly, Eva
+
+  fit_question:
+    tier: draft
+    needs_order: false
+    approach: |
+      Genuinely helpful. A sales moment that shouldn't feel like one.
+
+      If RETRIEVED DATA contains garment_measurements for the style she asked about: give
+      JUST the measurements she asked for, exactly as given, with the unit. No explainer
+      about finished-vs-body measurements (team review: superfluous), no extra product
+      info she didn't ask about. Quote only the sizes she asked about, or the full run if
+      she didn't name sizes. NEVER recommend which size she should take.
+
+      If there are no garment_measurements but RETRIEVED DATA has catalog facts (sizes in
+      stock, description, price): ANSWER with those — which sizes exist, which are in stock,
+      anything the description states (rise, inseam, fabric, fit) — and offer to pull the
+      full garment measurements as the follow-up. That is a real answer, not a deflection.
+
+      Only when the specific fact she asked for exists nowhere in RETRIEVED DATA: write the
+      answer with ______ blanks for the reviewer to fill — "The inseam on the Sagan in a 27
+      is ______." — never "let me pull it and come back". The reviewer completes the number
+      and sends; that is the whole point of a draft. Keep it to the answer plus one line.
+    template: |
+      Hi {first_name},
+
+      Happy to help. Here are the measurements on the {style_name} in a {size}:
+
+      {measurement}: ______
+
+      Warmly, Eva
+
+    note: |
+      Measurements come from knowledge/sizing.yaml (Production's spec folder) via the same
+      grounding container as order facts, so a quoted number is verified like a tracking
+      number. Sizes are quotable facts; a size RECOMMENDATION needs her body measurements
+      and an ease judgement we don't have — usage_policy.may_recommend_a_size is false and
+      stays false. Styles with no spec on file are logged as such in routing_decisions —
+      that list is the standing ask to Production.
+
+  out_of_stock_discontinued:
+    tier: draft
+    needs_order: false
+    approach: "Be honest that it's gone — never a vague 'keep checking back'. Frame it as the nature of limited runs, then redirect her interest to something real."
+    template: |
+      Hi {first_name},
+
+      Thank you for reaching out. that piece was part of a limited run, and I'm sorry to say
+      it's now sold through completely, with no restock planned.
+
+      If you tell me a little more about what you loved about it, I'll keep an eye out for you
+      as new collections arrive.
+
+      Warmly, Eva
+    note: |
+      Deliberately drops the deck's "here are 2 alternatives with links" line — we have no
+      product-recommendation retrieval, so naming alternatives would be invented. read_products
+      plus a similarity lookup would restore it.
+
+  custom_jewelry_request:
+    tier: draft
+    needs_order: false
+    approach: "High intent — she's ready to invest. Decline the custom work in one line, then turn it into a personal consultation. Never say 'unfortunately' or over-apologize — no custom is a brand position, not a shortfall."
+    template: |
+      Hi {first_name},
+
+      Thank you so much for thinking of us for this. we don't currently offer custom pieces,
+      but I'd love to help you find something in our collection that captures what you have
+      in mind.
+
+      If you tell me a little more about what you're envisioning. occasion, style, stone,
+      budget, whatever is relevant. I can pull a few pieces that feel closest. I'm also happy
+      to send additional photos and full details on anything that catches your eye.
+
+      Warmly, Eva
+
+  general_policy_question:
+    tier: draft
+    needs_order: false
+    approach: "Answer once, clearly, from policy_facts.yaml only. Do not explain the policy twice. If the question touches the return window or any fee, the router escalates it instead."
+    template: null
+
+  # -------------------------------------------- Tier 2 — drafted, gated on a human sign-off
+
+  out_of_window_return:
+    tier: manager
+    gate: policy
+    needs_order: true
+    fields: [line_items, item]
+    approach: |
+      Team rule (LW): up to about a week past the window we accept the return for store
+      credit; well past it we do not allow the return. The portal cannot make her a label
+      either way, the team creates it by hand. If RETRIEVED DATA has the ship date, lead
+      with the outcome the rule gives. Never state the internal cutoff to her, never open
+      with the policy or 'unfortunately'. The approver confirms the dates and the remedy.
+    template: |
+      Hi {first_name},
+
+      Since we're past our return window we aren't able to process a refund, but we'd love to
+      offer you store credit instead.
+
+      Just let us know and we'll get that set up for you right away.
+
+      Warmly, Eva
+    note: |
+      Store credit is a policy exception the deck says needs manager approval. The template
+      deliberately omits the window length and the word "full" — both are unresolved
+      (CONFLICTS.md #1, #2). The approver fills those in.
+
+  expedited_shipping_repeat:
+    tier: manager
+    gate: policy
+    needs_order: true
+    fields: [orders_count]
+    approach: "A loyalty moment — say yes generously, make it feel effortless, not like an exception she got lucky on. Don't say it's free because she's a repeat customer; 'on us' says it without setting a precedent."
+    template: |
+      Hi {first_name},
+
+      Of course. we'd be happy to. I've upgraded your order to {shipping_speed} shipping,
+      on us.
+
+      You'll receive updated tracking as soon as it's on its way.
+
+      Warmly, Eva
+    note: |
+      Deck: EVERY expedited request needs manager approval before committing. estimated_delivery
+      is deliberately NOT a field — the stored date is the PRE-upgrade estimate, so quoting it
+      in a post-upgrade sentence is grounded but means the wrong thing. The approver adds the
+      real new date after booking.
+
+  expedited_shipping_new:
+    tier: manager
+    gate: policy
+    needs_order: true
+    fields: [orders_count]
+    approach: "Happy to make it happen — she just covers the difference. Frame the invoice as the quick way to get it moving, not a hurdle. Send the invoice in the same exchange."
+    template: |
+      Hi {first_name},
+
+      Absolutely. we can upgrade your order to {shipping_speed} shipping.
+
+      I'll send an invoice over to you now. as soon as it's paid, I'll create your new
+      shipping label right away and confirm with updated tracking.
+
+      Warmly, Eva
+    note: "Cost is deliberately absent — the drafter has no quoted rate and may not invent one. The approver adds it."
+
+  wrong_item_received:
+    tier: manager
+    gate: action
+    needs_order: true
+    fields: [line_items, item]
+    approach: "Our mistake. Correct item + return label in the same email. No waiting. Overnight is standard for our errors."
+    template: |
+      Hi {first_name},
+
+      I'm so sorry for the mistake and inconvenience.
+
+      I'm sending the correct {item} to you now via overnight shipping, and a return label is
+      attached to send back the incorrect item.
+
+      Warmly, Eva
+    note: "Action gate: a human must actually book the overnight reship and attach the label file before sending. The deck's 'Thank you, Eva' sign-off is treated as a typo — see CONFLICTS.md #5."
+
+  delayed_package_aflalo:
+    tier: manager
+    gate: action
+    needs_order: true
+    fields: [tracking_number, tracking_url]
+    approach: "Own the mistake plainly, no excuses. Overnight shipping is automatic when the delay is ours — not an escalation."
+    template: |
+      Hi {first_name},
+
+      Thank you for reaching out, and I'm so sorry for this delay.
+
+      Your order is shipping out today via overnight delivery. I appreciate your patience, and
+
+      Warmly, Eva
+    note: "Action gate: the new date and new tracking number don't exist until a human books the overnight. Those lines are omitted from the template rather than guessed; the approver adds them."
+
+  lost_in_transit:
+    tier: manager
+    gate: action
+    needs_order: true
+    fields: [tracking_number, carrier]
+    approach: "If confirmed lost: offer reship or refund immediately. The replacement ships before the carrier claim is resolved, never after."
+    template: |
+      Hi {first_name},
+
+      Thank you for your patience while I looked into this. After tracking your package with
+      {carrier}, it unfortunately appears to have been lost in transit. I apologize for the
+      inconvenience.
+
+      I've already initiated a replacement and it's on its way to you. I'll follow up with
+      the new tracking as soon as it's moving.
+
+      Please let me know if I can help further.
+
+      Warmly, Eva
+    hard_no: true
+    note: "Action gate: a human must actually initiate the replacement. New tracking number and date are omitted rather than invented."
+
+  preorder_cancel_not_shipped:
+    tier: manager
+    gate: action
+    needs_order: true
+    fields: [fulfillment_status]
+    approach: "Honor it cleanly. No friction, no guilt. Cancel, refund, confirm — all in one email. Don't make her feel bad for cancelling."
+    template: |
+      Hi {first_name},
+
+      Of course. I've cancelled your order and a refund has been issued to your original
+      payment method.
+
+      If you'd ever like a hand choosing something down the line, I'm always here.
+
+      Warmly, Eva
+    note: |
+      Action gate: the deck is explicit — "the email says 'has been issued', so make it true."
+      A human processes the refund in Shopify, then sends. The refund amount and the business-day
+      count are omitted (CONFLICTS.md #2). The router additionally requires fulfillment_status to
+      confirm it really is unshipped — the deck says never guess, tracking status decides which
+      email she gets.
+
+  preorder_cancel_in_transit:
+    tier: manager
+    gate: action
+    needs_order: true
+    fields: [fulfillment_status, tracking_url, estimated_delivery]
+    approach: "Be upfront that it's too late to cancel, then make the return effortless. She should feel taken care of, not caught by a policy."
+    template: |
+      Hi {first_name},
+
+      Thank you for reaching out. I checked right away, and your order is already on its way
+      to you, so I'm not able to cancel it at this point.
+
+      Once it arrives you're welcome to return it, and I've attached a prepaid return label so
+      it's ready whenever you are. I'll process your refund as soon as it's back with us.
+
+      Warmly, Eva
+    note: "Action gate: a human attaches the label file. Return window length omitted (CONFLICTS.md #1)."
+
+  cancelled_unable_to_fulfill:
+    tier: manager
+    gate: action
+    needs_order: true
+    fields: [line_items, item, fulfillment_status]
+    approach: "This is on us, so own it clearly. Don't bury the reason. Lead with the resolution (refund), not the apology."
+    template: |
+      Hi {first_name},
+
+      I'm reaching out because we're not able to fulfill the {item} from your order. I've
+      cancelled this item and issued a refund to your original payment method.
+
+      I'm really sorry about this. if you'd like help finding an alternative, I'm happy to
+      pull some options for you.
+
+      Warmly, Eva
+    note: |
+      Usually proactive outreach rather than an inbound reply, but it also arrives as a response
+      to "why hasn't this shipped." Action gate: the refund must be real before sending.
+
+  upcoming_products_question:
+    tier: draft
+    needs_order: false
+    approach: |
+      She's asking what's coming next (new colors, new styles, next drop). We never
+      announce unreleased products, colors, or dates. the agent has no data on them and
+      pre-announcing is a brand decision. Answer with what IS current: if she named a
+      piece, RETRIEVED DATA carries its live colorways and sizes from the catalog. Warmly
+      say what exists now, and that what's next isn't something we can share yet.
+    template: |
+      Hi {first_name},
+
+      We haven't announced what's coming next, so I can't share that just yet. what I can
+      tell you is what's available right now: {current_lineup}.
+
+      The moment something new lands, it goes up on the site first.
+
+      Warmly, Eva
+
+  out_of_stock_restocking:
+    tier: manager
+    gate: action
+    needs_order: false
+    approach: |
+      Team review (LW): keep it to exactly two facts. the item is sold out, and she has
+      been added to the waitlist to be notified as soon as it is back in stock. Nothing
+      else: no incoming-stock detail, no product description, no alternatives unless she
+      asked. The approver actually adds her to the waitlist before sending.
+    template: |
+      Hi {first_name},
+
+      That piece is currently sold out. I've added you to the waitlist, so you'll be
+      notified as soon as it's back in stock.
+
+      Warmly, Eva
+
+      Thank you for reaching out. that piece is currently sold out.
+
+      The good news: it's coming back. I've added you to the waitlist, so you'll be the first
+      to know the moment it's available.
+
+      In the meantime, if you'd like, I can share a couple of pieces in a similar spirit that
+      are available now.
+
+      Warmly, Eva
+    note: |
+      Action gate: the deck is explicit — "Add her to the waitlist yourself before replying —
+      the email says 'I've added you', not 'you can sign up'." We have no waitlist API, so a
+      human does it and then sends. Restock timeframe omitted rather than promised.
+
+  # ------------------------------------- Tier 3 — no documented policy, so no draft possible
+
+  exchange_request:
+    tier: draft
+    needs_order: false
+    approach: |
+      The published policy (aflalonyc.com/policies/refund-policy) answers this completely:
+      we do not offer exchanges; the path is a return for refund or store credit, then a
+      new order. State it warmly, lead with the path not the "no". The return fee is
+      waived when she chooses store credit — that is usually the answer she wants.
+      Never promise to hold the new size or waive anything.
+    template: |
+      Hi {first_name},
+
+      The easiest way to make the swap: start a return at https://returns.aflalonyc.com/#/
+      and place a new order for the size you'd like. If you take the refund as store credit,
+      the return fee is waived entirely.
+
+      Warmly, Eva
+
+  discount_code_request:
+    tier: draft
+    needs_order: false
+    hard_no: true
+    approach: |
+      Documented fact (policy_facts): we do not have welcome or first-time-buyer codes.
+      Decline in one warm line, no apology spiral, never hint that codes exist for others
+      or that a manager might make one.
+    template: |
+      Hi {first_name},
+
+      We don't offer welcome or promotional codes. our pricing stays consistent for
+      everyone, always.
+
+      Warmly, Eva
+
+  alteration_or_resize_request:
+    tier: draft
+    needs_order: false
+    approach: |
+      Documented (Notion Alteration Policy): alterations aren't part of our standard
+      service, altered pieces become final sale, and jewelry resizing is not an advertised
+      service. For garments: state it plainly and mention the final-sale consequence so an
+      outside alteration is an informed choice. For JEWELRY resizing: acknowledge and say
+      the team will confirm what's possible for that piece — set flag_for_review, a human
+      decides jewelry case-by-case.
+    template: |
+      Hi {first_name},
+
+      Alterations aren't a service we offer, and one thing worth knowing: altered pieces
+      become final sale, so they can no longer be returned.
+
+      Warmly, Eva
+
+  messenger_delivery_request:
+    tier: manager
+    gate: policy
+    needs_order: false
+    manager_reason: "messenger eligibility depends on the VIP list a human holds — check it before sending"
+    approach: |
+      Eligibility depends on a VIP designation held by the brand team (or Lillian's
+      approval), which the agent cannot see. Draft the documented fallback: offer
+      complimentary ground shipping, never promise messenger. The approver checks the VIP
+      list and upgrades the reply if she qualifies.
+    template: |
+      Hi {first_name},
+
+      I'd love to help get this to you smoothly. we can send it with complimentary ground
+      shipping right away.
+
+      If timing is tight, tell me the date you're working toward and I'll see what's
+      possible on our end.
+
+      Warmly, Eva
+
+  jewelry_price_inquiry:
+    tier: manager
+    gate: policy
+    needs_order: false
+    signal_exemptions: [asks_about_money_amount]
+    manager_reason: "quotes a live per-country price — a human confirms the number before it goes out"
+    approach: |
+      Shopify suppresses diamond jewelry prices on the site (the pages show $0), so she has
+      to email us — never mention that mechanic to her; it reads as a bug. Warm and direct.
+
+      If RETRIEVED DATA contains price facts (product, price_min, price_max, price_currency,
+      price_country): state the price for her country in that currency. If min and max
+      differ, give it as a range and say the price depends on the variant (size / length /
+      carat). Prices are whole dollars, already rounded. Close the price sentence with the
+      price_disclaimer's substance: duties, taxes, shipping and timing can vary, and
+      checkout shows the final total for her location. Quote ONLY the retrieved numbers —
+      never a price from memory, never a converted currency, and never anything about the
+      $0 on the website.
+
+      If she hasn't given a ship-to country: quote NOTHING (team rule, LW: the country
+      determines accurate pricing). Ask exactly in this shape: "Thank you for reaching
+      out! In order to provide you accurate pricing, can you please confirm the country
+      the {piece} would ship to?" One question, no reference price, no ranges.
+
+      If price facts are missing entirely: the same ask, plus which piece if she didn't
+      name one. Never guess.
+    template: |
+      Hi {first_name},
+
+      Thank you so much for your interest. happy to help with pricing.
+
+      For delivery to {price_country}, the {product} is {price}. Duties, taxes, and
+      shipping can vary by destination, and checkout will show your final total.
+
+      Warmly, Eva
+    note: |
+      The price comes from Shopify contextualPricing per country at draft time — zeros (the
+      price-suppressed duplicate pages) are discarded before anything is quoted, and if
+      every match is $0 the email escalates instead. Manager-gated: a human confirms every
+      quoted number before sending. This supersedes the parked artifact-URL country sheets.
+
+  # ------------------------------------------------------------------ business mail
+  # Not customer service, but 84% of the real unresolved queue (measured 2026-08-21:
+  # 133 of 158). Each gets classified + a light skeleton draft — greeting, closing, a
+  # category-appropriate body with ZERO facts and ZERO commitments — so a human edits
+  # rather than writes from scratch. customer_facing: false keeps them out of CS KPIs.
+  # The escalating signals these emails routinely trip (a vendor pitch "asks about money",
+  # an event invite "states a deadline") are noise here, not risk — exempted per category.
+
+  recruiting_or_talent:
+    tier: draft
+    needs_order: false
+    customer_facing: false
+    signal_exemptions: [asks_about_money_amount, time_sensitive_deadline, legal_press_vip]
+    approach: |
+      A recruiter, candidate, or talent platform. Warm, two sentences, zero commitments:
+      thank them, say it's been passed to the right person. Never comment on roles,
+      hiring plans, or timelines.
+    template: |
+      Hi {first_name},
+
+      Thank you for reaching out and for thinking of AFLALO. I've passed your note along to
+      the right person on our team. if there's interest, they'll be in touch directly.
+
+      Warmly, Eva
+
+  vendor_or_agency_pitch:
+    tier: draft
+    needs_order: false
+    customer_facing: false
+    signal_exemptions: [asks_about_money_amount, time_sensitive_deadline, legal_press_vip]
+    approach: |
+      A cold pitch — ads, growth, software, agencies. Courteous decline, two sentences,
+      zero openings: no "not right now", no "circle back next quarter" — those invite
+      follow-up sequences. Never comment on our tools, spend, or plans.
+    template: |
+      Hi {first_name},
+
+      Thanks for reaching out. This isn't something we're exploring, but we appreciate you
+      thinking of AFLALO and wish you the best with it.
+
+      Warmly, Eva
+
+  partnership_or_wholesale:
+    tier: draft
+    needs_order: false
+    customer_facing: false
+    cc: lani@aflalonyc.com
+    signal_exemptions: [asks_about_money_amount, time_sensitive_deadline, legal_press_vip]
+    approach: |
+      Wholesale, stockist, collaboration, and showroom requests loop in Lani, our head of
+      wholesale (LW's flow). Say exactly that and stop. Lani is cc'd on the draft
+      automatically. No terms discussed, no enthusiasm that reads as intent.
+    template: |
+      Hi {first_name},
+
+      Thanks for reaching out, I am adding Lani, our head of wholesale, who will get back
+      to you!
+
+      Warmly, Eva
+
+      Thank you for reaching out. I've shared your note with our team, and if it's
+      something we can explore, the right person will get back to you directly.
+
+      Warmly, Eva
+
+  billing_or_invoice:
+    tier: draft
+    needs_order: false
+    customer_facing: false
+    signal_exemptions: [asks_about_money_amount, time_sensitive_deadline]
+    approach: |
+      An invoice, statement, or account notice from a vendor or carrier. Acknowledge
+      receipt and that it's with the right person. Never confirm an amount, never promise
+      a payment date.
+    template: |
+      Hi {first_name},
+
+      Thank you. received, and I've passed it to the right person on our side.
+
+      Warmly, Eva
+
+  automated_or_newsletter:
+    tier: human
+    needs_order: false
+    customer_facing: false
+    reason_for_tier: "Machine-sent mail (newsletters, platform notifications, auto-replies). Replying to a no-reply is noise — classified and sorted, nothing drafted."
+
+  press_or_editorial:
+    tier: human
+    needs_order: false
+    customer_facing: false
+    reason_for_tier: "Press stays a human call. The press safety net fires before classification by design and remains authoritative; this category only catches what phrases past it, and it still goes to a person."
+
+  suspected_phishing_or_scam:
+    tier: human
+    needs_order: false
+    customer_facing: false
+    reason_for_tier: "Impersonation / gifting-con / vendor-fraud marks. NEVER draft — even a polite decline confirms a live inbox. Verify the requester through a known channel (agency main line, verified social, existing contact) before anything moves. Usually set by the deterministic net in phishing.py; the classifier can also reach it."
+
+  other:
+    tier: human
+    needs_order: false
+    reason_for_tier: "No matched category. This bucket is the roadmap — whatever piles up here is the next category to add."
+
+# Proactive/outbound, triggered by inventory changes rather than an inbound email.
+# Explicitly out of scope for this reply-drafting pipeline (design doc §2.0).
+excluded_outbound:
+  - back_in_stock_personal_outreach
+  - waitlist_followup

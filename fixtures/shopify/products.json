@@ -1,0 +1,261 @@
+[
+  {
+    "title": "Lone Diamond Pendant Necklace",
+    "handle": "lone-diamond-pendant-necklace",
+    "variants": [
+      {
+        "title": "16\"",
+        "contextual": {
+          "US": [
+            "4250.00",
+            "USD"
+          ],
+          "IT": [
+            "4890.00",
+            "EUR"
+          ],
+          "GB": [
+            "4150.00",
+            "GBP"
+          ]
+        }
+      },
+      {
+        "title": "18\"",
+        "contextual": {
+          "US": [
+            "4450.00",
+            "USD"
+          ],
+          "IT": [
+            "5120.00",
+            "EUR"
+          ],
+          "GB": [
+            "4350.00",
+            "GBP"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "title": "Lone Diamond Pendant Necklace",
+    "handle": "lone-diamond-pendant-necklace-1",
+    "note": "the $0 price-suppressed duplicate page international customers actually land on",
+    "variants": [
+      {
+        "title": "16\"",
+        "contextual": {
+          "US": [
+            "0.00",
+            "USD"
+          ],
+          "IT": [
+            "0.00",
+            "EUR"
+          ]
+        }
+      },
+      {
+        "title": "18\"",
+        "contextual": {
+          "US": [
+            "0.00",
+            "USD"
+          ],
+          "IT": [
+            "0.00",
+            "EUR"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "title": "Emerald Solitaire Ring",
+    "handle": "emerald-solitaire-ring-1",
+    "note": "duplicate exists but the priced original was never created \u2014 must escalate, never quote 0",
+    "variants": [
+      {
+        "title": "6",
+        "contextual": {
+          "US": [
+            "0.00",
+            "USD"
+          ],
+          "IT": [
+            "0.00",
+            "EUR"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "title": "Racquet String Bracelet",
+    "handle": "racquet-string-bracelet",
+    "variants": [
+      {
+        "title": "One size",
+        "contextual": {
+          "US": [
+            "980.00",
+            "USD"
+          ],
+          "IT": [
+            "1140.00",
+            "EUR"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "title": "Tavi Pant in Wool",
+    "handle": "tavi-pant-in-wool",
+    "status": "ACTIVE",
+    "description": "This is a low-rise pant with a wide leg and clean, elongated line. Crafted in fine Italian wool twill for a soft hand and subtle texture, finished with double needle contrast top stitching at the waistband.",
+    "variants": [
+      {
+        "title": "Black / 0",
+        "options": {
+          "Size": "0"
+        },
+        "available": true,
+        "contextual": {
+          "US": [
+            "670.00",
+            "USD"
+          ]
+        }
+      },
+      {
+        "title": "Black / 2",
+        "options": {
+          "Size": "2"
+        },
+        "available": true,
+        "contextual": {
+          "US": [
+            "670.00",
+            "USD"
+          ]
+        }
+      },
+      {
+        "title": "Black / 4",
+        "options": {
+          "Size": "4"
+        },
+        "available": false,
+        "contextual": {
+          "US": [
+            "670.00",
+            "USD"
+          ]
+        },
+        "incoming": 1
+      },
+      {
+        "title": "Black / 6",
+        "options": {
+          "Size": "6"
+        },
+        "available": true,
+        "contextual": {
+          "US": [
+            "670.00",
+            "USD"
+          ]
+        }
+      },
+      {
+        "title": "Black / 8",
+        "options": {
+          "Size": "8"
+        },
+        "available": true,
+        "contextual": {
+          "US": [
+            "670.00",
+            "USD"
+          ]
+        }
+      },
+      {
+        "title": "Black / 10",
+        "options": {
+          "Size": "10"
+        },
+        "available": true,
+        "contextual": {
+          "US": [
+            "670.00",
+            "USD"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "title": "Sagan Jean in Rigid Denim",
+    "handle": "sagan-jean-in-rigid-denim",
+    "status": "ACTIVE",
+    "description": "A straight-leg jean in rigid Japanese denim with a high rise and a 32 inch inseam, hemmed clean. Sits at the natural waist.",
+    "variants": [
+      {
+        "title": "Indigo / 25",
+        "options": {
+          "Size": "25"
+        },
+        "available": true,
+        "contextual": {
+          "US": [
+            "425.00",
+            "USD"
+          ]
+        }
+      },
+      {
+        "title": "Indigo / 26",
+        "options": {
+          "Size": "26"
+        },
+        "available": true,
+        "contextual": {
+          "US": [
+            "425.00",
+            "USD"
+          ]
+        }
+      },
+      {
+        "title": "Indigo / 27",
+        "options": {
+          "Size": "27"
+        },
+        "available": false,
+        "contextual": {
+          "US": [
+            "425.00",
+            "USD"
+          ]
+        }
+      },
+      {
+        "title": "Indigo / 28",
+        "options": {
+          "Size": "28"
+        },
+        "available": true,
+        "contextual": {
+          "US": [
+            "425.00",
+            "USD"
+          ]
+        }
+      }
+    ]
+  }
+]

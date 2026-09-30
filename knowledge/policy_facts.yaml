@@ -1,0 +1,100 @@
+# Hard policy facts the drafter may state. Every entry carries provenance.
+# If a fact is not in here and not in retrieved Shopify data, the drafter may not state it.
+
+returns:
+  window_days: 14
+  window_starts_from: ship_date        # Notion "Return Policy" (2026-05-08)
+  window_starts_from_conflict: |
+    RESOLVED 2026-08-26 by the PUBLISHED policy at aflalonyc.com/policies/refund-policy —
+    the promise every customer agrees to at purchase: domestic returns "within 14 days of
+    the date your order was shipped"; international "7 days of order delivery". This matches
+    the Notion Return Policy and the team's own sent mail ("our 14-day return window").
+    The deck's "from delivery" slide is superseded. Recorded in CONFLICTS.md #1.
+  window_international_days: 7
+  window_international_starts_from: delivery
+  condition: "Unworn, original condition and packaging, accessories in dust bags"
+  channel_clothing: "https://returns.aflalonyc.com/#/"
+  channel_jewelry: "email aflalo@aflalonyc.com"      # jewelry does NOT use the portal
+  channel_international: "email aflalo@aflalonyc.com"
+  label: "Prepaid label is emailed after the portal submission — we do not pre-attach one"
+  dropoff_grace_days: 7
+  refund_fee_domestic_usd: 20
+  refund_fee_international_usd: 50
+  refund_fee_waived_for_store_credit: true   # published: "waived if you choose store credit"
+  restocking_fee_waived: "store credit returns; also in-store returns"
+  refund_processing_days: 10           # business days from receipt, bank-dependent
+  out_of_window_rule: |
+    INTERNAL (LW, 2026-09-01): the portal cannot create a label once the window has
+    passed. Up to ~1 week past the window we accept the return for STORE CREDIT (label
+    made manually by the team); more than a week past, we do not allow the return.
+  out_of_window_grace_days: 7
+  source: "aflalonyc.com/policies/refund-policy (fetched 2026-08-26); Notion / Return Policy (2026-05-08)"
+
+exchanges:
+  offered: false
+  guidance: "Return for refund or store credit, then place a new order."
+  source: "Notion / Ecommerce SOPs / Return Policy (2026-05-08)"
+
+final_sale:
+  returnable: false
+  store_credit: false
+  note: "Non-negotiable. Communicated at checkout."
+  source: "CS deck, policy slide + Final Sale Return scenario"
+
+out_of_window:
+  refund: false
+  store_credit: "possible, REQUIRES MANAGER APPROVAL"
+  source: "CS deck, policy slide + Out-of-Window Return scenario"
+
+damage:
+  box_damaged_report_window_days: 7    # from delivery, with photos
+  item_damaged: "email aflalo@aflalonyc.com with photos for assessment"
+  our_error_remedy: "Overnight replacement + return label, same email, no questions"
+  source: "Notion Return Policy + CS deck policy slide"
+
+discount_codes:
+  cs_goodwill_code: CS-15OFF
+  cs_goodwill_percent: 15
+  cs_goodwill_authorization: "Lillian Whittaker"
+  cs_goodwill_qualifying:
+    - "Order shipped past preorder date"
+    - "Shipping error"
+    - "Item arrived damaged"
+  welcome_or_first_time_code_exists: false   # confirmed by Ava Murray, #customer-service 2026-08-10
+  drafter_may_offer_a_code: false            # ALWAYS human — it's a money commitment needing Lillian
+  source: "Notion / Ecommerce SOPs / Discount Code SOP (May 2026) + #customer-service Slack"
+
+messenger_delivery:
+  vendor: Lightspeed
+  eligibility_any_of:
+    - "Client is VIP (designated by Emily Pero or Jordyn Williams — relationship-based, not a spend threshold)"
+    - "Order total exceeds $1,000"
+    - "Goodwill gesture — REQUIRES Lillian's approval"
+  coverage: "All five NYC boroughs. Outside NYC requires Lillian's approval."
+  outbound_only: true
+  if_not_eligible: "Offer complimentary ground shipping; if she pushes back, flag Lillian. Never promise messenger."
+  drafter_may_offer: false                   # eligibility depends on a human-held VIP list
+  source: "Notion / Ecommerce SOPs / Messenger Service (Lightspeed) Policy (2026-05-08)"
+
+alterations:
+  covered_by_standard_service: false
+  after_alteration: "Final sale — altered pieces cannot be returned"
+  jewelry_resizing: "Not an advertised service — route to a human"
+  source: "Notion / Alteration Policy (2026-05-28)"
+
+jewelry_pricing:
+  why_customers_email: |
+    Shopify blocks price display on diamond jewelry PDPs, so those pages are duplicated with
+    price set to $0 and international customers must email in for a price.
+  country_sheets_built: [Italy]
+  country_sheets_pending: [UK, France, Germany, Switzerland, Sweden, Greece, Belgium, Poland, Australia, New Zealand, Canada]
+  italy_sheet_blocker: |
+    SUPERSEDED 2026-08-21: prices are now retrieved live from Shopify per country
+    (contextualPricing) at draft time, so the artifact-URL country sheets are no longer the
+    blocker. Country pages remain a nice-to-have for self-serve.
+  drafter_may_quote_a_price: retrieved-only   # live per-country Shopify lookup; range + disclaimer; manager-gated; never from memory
+  price_disclaimer: "Duties, taxes, shipping, and timing can vary by destination and time of purchase. Checkout shows the final total for your location."
+  source: "Notion / Jewelry Pricing Primer — International Customers (Italy pilot, 2026-07-20); Shopify contextualPricing (2026-08-21)"
+
+fixed_signoff: "Warmly, Eva"
+support_inbox: aflalo@aflalonyc.com
