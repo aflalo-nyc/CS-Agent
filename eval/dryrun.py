@@ -137,7 +137,7 @@ def main() -> int:
     )
 
     outcomes = pipe.run(limit=100)
-    mark = {"draft": "\033[32mDRAFT  \033[0m", "needs-manager-approval": "\033[33mMANAGER\033[0m", "needs-human": "\033[31mHUMAN  \033[0m"}
+    mark = {"draft": "\033[32mDRAFT  \033[0m", "needs-manager-approval": "\033[33mMANAGER\033[0m", "draft-unverified": "\033[35mUNVERIF\033[0m", "needs-human": "\033[31mHUMAN  \033[0m"}
 
     print(f"{'id':<6}{'decision':<9}{'category':<30}reason")
     print("-" * 108)
