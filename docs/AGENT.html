@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!-- Source of the project page published at https://claude.ai/artifact/ST8X4AJgMxbmV7wYEFsujt
+     Open this file in a browser to read it. Keep the two in sync; the artifact is the shared copy. -->
+<title>AFLALO CS Agent</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one 760px reading column, small-caps section labels, a sticky in-page nav; the pipeline is drawn as a vertical chain of boxes; cards only for the team block and the status strip. Blue accent ties it to the CS inbox preview page. */
+:root{
+  --ground:#F6F5F2; --card:#FFFFFF; --ink:#1F1E1B; --muted:#6F6B64; --line:#E3E0D9;
+  --accent:#3B4F8A; --accent-soft:#E9ECF5;
+  --ready:#2F6B4F; --ready-bg:#E3F0E8; --approve:#8A5A12; --approve-bg:#F7ECD8;
+  --unver:#7A3E8C; --unver-bg:#F1E6F4; --nodraft:#5F5B55; --nodraft-bg:#ECEAE5; --phish:#9C2F2F; --phish-bg:#F7E3E3;
+  --mono-bg:#24231F; --mono-ink:#ECE9E2;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#1B1A18; --card:#242320; --ink:#ECE9E2; --muted:#A49F96; --line:#38362F;
+    --accent:#8FA3E0; --accent-soft:#2A3047;
+    --ready:#8CC9A8; --ready-bg:#24352C; --approve:#E0B268; --approve-bg:#3A3122;
+    --unver:#C79AD6; --unver-bg:#372A3C; --nodraft:#B5B0A7; --nodraft-bg:#312F2A; --phish:#E08A8A; --phish-bg:#3D2626;
+    --mono-bg:#121110; --mono-ink:#E6E2D9; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#1B1A18; --card:#242320; --ink:#ECE9E2; --muted:#A49F96; --line:#38362F;
+  --accent:#8FA3E0; --accent-soft:#2A3047;
+  --ready:#8CC9A8; --ready-bg:#24352C; --approve:#E0B268; --approve-bg:#3A3122;
+  --unver:#C79AD6; --unver-bg:#372A3C; --nodraft:#B5B0A7; --nodraft-bg:#312F2A; --phish:#E08A8A; --phish-bg:#3D2626;
+  --mono-bg:#121110; --mono-ink:#E6E2D9; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--ground); color:var(--ink); font:16px/1.6 var(--display); margin:0; padding-block:2.5rem 5rem; padding-inline:1.25rem}
+main{max-width:760px; margin:0 auto}
+h1{font-size:2.1rem; font-weight:700; letter-spacing:-.02em; line-height:1.12; margin:0 0 .5rem; text-wrap:balance}
+.lede{color:var(--muted); margin:0 0 1.4rem; max-width:64ch; font-size:1.05rem}
+h2{font-size:.78rem; font-weight:600; text-transform:uppercase; letter-spacing:.09em; color:var(--muted); margin:3rem 0 1rem; scroll-margin-top:4.5rem}
+h3{font-size:1.08rem; font-weight:600; margin:1.5rem 0 .4rem; letter-spacing:-.01em; text-wrap:balance}
+p{margin:.6rem 0; max-width:68ch}
+ul{margin:.4rem 0 .4rem 1.2rem; padding:0} li{margin:.35rem 0}
+strong{font-weight:600}
+a{color:var(--accent)}
+code{font:.86em var(--mono); background:var(--accent-soft); border-radius:4px; padding:.1em .35em; overflow-wrap:anywhere}
+pre{background:var(--mono-bg); color:var(--mono-ink); border-radius:8px; padding:.9rem 1rem; overflow-x:auto; font:.84rem/1.55 var(--mono); margin:.7rem 0}
+
+.status{display:flex; flex-wrap:wrap; gap:.5rem .6rem; margin:0 0 1.6rem}
+.status span{font:500 .8rem/1 var(--mono); border:1px solid var(--line); border-radius:999px; padding:.45rem .7rem; color:var(--muted); background:var(--card)}
+.status span.live{border-color:var(--accent); color:var(--accent); background:var(--accent-soft)}
+.status span.wait{border-color:var(--approve); color:var(--approve); background:var(--approve-bg)}
+
+nav.toc{position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--ground); border-bottom:1px solid var(--line); margin:0 0 1.6rem; padding:.6rem 0; display:flex; gap:.2rem 1rem; flex-wrap:wrap; font-size:.85rem}
+nav.toc a{color:var(--muted); text-decoration:none; font-weight:500; padding:.2rem 0}
+nav.toc a:hover, nav.toc a:focus-visible{color:var(--accent)}
+
+.hand{background:var(--card); border:1px solid var(--accent); border-radius:10px; padding:1.3rem 1.5rem 1.2rem; margin:1rem 0 .4rem}
+.hand h3{margin:0 0 .9rem; font-size:1.15rem}
+.kv{display:grid; grid-template-columns:10rem 1fr; gap:.55rem 1rem; align-items:start; font-size:.97rem}
+.kv .k{color:var(--muted); font-size:.8rem; text-transform:uppercase; letter-spacing:.07em; font-weight:600; padding-top:.2rem}
+.kv .v{min-width:0}
+
+.chip{display:inline-block; font:600 .68rem/1 var(--mono); border-radius:4px; padding:.3em .5em; margin-right:.4rem; vertical-align:middle; white-space:nowrap}
+.chip.ready{background:var(--ready-bg); color:var(--ready)}
+.chip.approve{background:var(--approve-bg); color:var(--approve)}
+.chip.unver{background:var(--unver-bg); color:var(--unver)}
+.chip.nodraft{background:var(--nodraft-bg); color:var(--nodraft)}
+.chip.phish{background:var(--phish-bg); color:var(--phish)}
+
+.tablewrap{overflow-x:auto; margin:.8rem 0}
+table{border-collapse:collapse; width:100%; font-size:.92rem}
+th{text-align:left; font-size:.72rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:600; padding:.45rem .7rem .45rem 0; border-bottom:1px solid var(--line); white-space:nowrap}
+td{padding:.55rem .7rem .55rem 0; border-bottom:1px solid var(--line); vertical-align:top}
+td code{white-space:nowrap}
+
+/* system map */
+.map{display:grid; grid-template-columns:1fr; gap:.6rem; margin:1rem 0}
+.sys{border:1px solid var(--line); border-radius:8px; background:var(--card); padding:.8rem 1rem; min-width:0}
+.sys .t{font:600 .72rem var(--mono); text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin-bottom:.25rem}
+.sys .n{font-weight:600}
+.sys .d{font-size:.9rem; color:var(--muted)}
+.sys.core{border-color:var(--accent); background:var(--accent-soft)}
+.arrow{color:var(--muted); font:500 .8rem var(--mono); padding:0 .4rem}
+@media (min-width:640px){ .map{grid-template-columns:1fr auto 1.2fr auto 1fr; align-items:center} .map .arrow{text-align:center} .map .stack{display:grid; gap:.6rem} }
+@media (max-width:639px){ .map .arrow{text-align:center} .map .stack{display:grid; gap:.6rem} }
+
+/* pipeline */
+.pipe{display:grid; grid-template-columns:auto 1fr; gap:.7rem 1rem; margin:1rem 0; font-size:.95rem}
+.pipe .n{font:600 .78rem/1 var(--mono); color:var(--accent); background:var(--accent-soft); border-radius:5px; padding:.35rem .5rem; align-self:start; margin-top:.15rem; white-space:nowrap}
+.pipe > div{min-width:0}
+.pipe .who{font:600 .7rem var(--mono); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-left:.4rem}
+.pipe .stop{color:var(--phish); font-weight:600}
+
+.callout{border-radius:8px; padding:.85rem 1rem; margin:.9rem 0; font-size:.94rem; border-left:3px solid var(--accent); background:var(--accent-soft)}
+.callout.warn{border-left-color:var(--approve); background:var(--approve-bg)}
+.callout p{margin:.3rem 0}
+.nums{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.7rem; margin:1rem 0}
+.num{background:var(--card); border:1px solid var(--line); border-radius:8px; padding:.8rem .9rem}
+.num .v{font:600 1.5rem/1.1 var(--display); letter-spacing:-.02em; font-variant-numeric:tabular-nums}
+.num .l{font-size:.82rem; color:var(--muted); margin-top:.25rem}
+.timeline{display:grid; grid-template-columns:auto 1fr; gap:.5rem 1rem; font-size:.95rem; margin:1rem 0}
+.timeline .d{font:500 .8rem/1.6 var(--mono); color:var(--muted); white-space:nowrap}
+.timeline > div{min-width:0}
+.foot{color:var(--muted); font-size:.85rem; margin-top:3rem; border-top:1px solid var(--line); padding-top:1rem}
+@media (max-width:560px){ .kv{grid-template-columns:1fr; gap:.2rem .5rem} .kv .k{margin-top:.5rem} body{padding-block:1.4rem 4rem} }
+</style>
+</head>
+<body>
+<main>
+<h1>AFLALO CS Agent</h1>
+<p class="lede">An agent that reads the shared customer service inbox, understands each unanswered conversation, and writes a reply in AFLALO's voice using only facts it can prove: live order data from Shopify, live prices and stock, Production's garment measurements, and written policy. Every draft goes to a person who reads it and sends it. It cannot send email, and it cannot mark anything read. This page is the one place for the whole project: what it does, how the brain decides, what it knows, how the numbers are measured, how it runs, and how to hand it over.</p>
+
+<div class="status">
+  <span class="live">Deployed on Railway, Sep 30 2026</span>
+  <span class="wait">Waiting for the Gmail app password</span>
+  <span>Drafts go to Airtable only</span>
+  <span>One-click Open in Gmail</span>
+  <span>173 tests passing</span>
+</div>
+
+<nav class="toc" aria-label="Sections">
+  <a href="#team">Using it</a>
+  <a href="#map">The system</a>
+  <a href="#brain">The brain</a>
+  <a href="#knows">What it knows</a>
+  <a href="#guard">Guardrails</a>
+  <a href="#kpi">KPIs</a>
+  <a href="#airtable">Airtable</a>
+  <a href="#railway">Railway</a>
+  <a href="#handoff">Handoff</a>
+  <a href="#history">History</a>
+</nav>
+
+<h2 id="team">Using it day to day</h2>
+<div class="hand">
+  <h3>The queue lives in Airtable, not in Gmail</h3>
+  <div class="kv">
+    <span class="k">Where</span>
+    <span class="v">Airtable base <a href="https://airtable.com/app86LogrXQQ1hno9">aflalo-cs-pipeline</a>, table <strong>CS Drafts</strong>. One row per customer email that needs attention. Sort by Priority, then work from the Status column.</span>
+    <span class="k">Read first</span>
+    <span class="v"><strong>Why.</strong> One line naming the exact rule that produced the Status. Read it before judging a draft.</span>
+    <span class="k">To send a draft</span>
+    <span class="v">Click <strong>Open in Gmail</strong> on the row. The draft appears inside the customer's thread in the shared inbox as a normal Gmail draft, and the thread opens in front of you. Read, edit, Send. Clicking twice does not make two drafts. If the link ever fails, the page shows the draft text to copy by hand.</span>
+    <span class="k">To teach it</span>
+    <span class="v">Write in <strong>Comments + Feedback</strong>. A learn step distills comments into binding lessons for every future draft. The 15 lessons from LW's review on Sep 1 are already in force.</span>
+    <span class="k">To measure it</span>
+    <span class="v">Tick <strong>Sent</strong> and paste what you actually sent into <strong>Final Sent Text</strong> if you edited it. The gap between draft and sent is the quality score.</span>
+  </div>
+</div>
+<h3>What each Status means</h3>
+<div class="tablewrap"><table>
+<tr><th>Status</th><th>Meaning</th><th>What you do</th></tr>
+<tr><td><span class="chip ready">Ready to send</span></td><td>Grounded, fact-checked, voice-checked.</td><td>Read it and send it.</td></tr>
+<tr><td><span class="chip approve">Needs approval</span></td><td>A draft exists, but a person must do or approve something first: ship the replacement, upgrade the shipping, approve a store-credit exception, confirm a quoted price.</td><td>Do the action or make the call, then send.</td></tr>
+<tr><td><span class="chip unver">Draft unverified</span></td><td>A draft exists but a fact check failed or the template didn't fully cover the question. It carries a visible <code>______</code> where the fact belongs.</td><td>A starting point only. Fill the blank or rewrite.</td></tr>
+<tr><td><span class="chip nodraft">No draft</span></td><td>The agent wrote nothing on purpose: angry or legal language, non-English, an order number Shopify can't find, a scenario with no written policy, a sales pitch.</td><td>A person replies from scratch, or ignores it.</td></tr>
+<tr><td><span class="chip phish">Possible phishing</span></td><td>Suspected impersonation or gifting scam. No draft of any kind, because even a polite decline confirms a live inbox.</td><td>Verify the sender through a known channel before anything moves.</td></tr>
+<tr><td>Thread resolved</td><td>The conversation closed since the row was made, either because our reply was the last word or the customer said thanks.</td><td>Nothing.</td></tr>
+</table></div>
+
+<h2 id="map">The system, in one picture</h2>
+<div class="map">
+  <div class="stack">
+    <div class="sys"><div class="t">Reads</div><div class="n">Shared Gmail inbox</div><div class="d">Over IMAP, read-only by protocol. Inbox and Sent, so it sees whole conversations.</div></div>
+    <div class="sys"><div class="t">Reads</div><div class="n">Shopify Admin API</div><div class="d">Orders, tracking, catalog, stock, per-country prices. Read-only scopes only.</div></div>
+    <div class="sys"><div class="t">Calls</div><div class="n">Anthropic API</div><div class="d">Three narrow model calls per email: classify, draft, fact-check.</div></div>
+  </div>
+  <div class="arrow">&rarr;</div>
+  <div class="sys core"><div class="t">Runs on Railway, every 10 min</div><div class="n">The agent service</div><div class="d">Imports new mail into its own database, runs the brain on customer messages received after go-live, pushes results to Airtable. Serves the Open in Gmail button. Holds no send permission.</div></div>
+  <div class="arrow">&rarr;</div>
+  <div class="stack">
+    <div class="sys"><div class="t">Writes</div><div class="n">Airtable</div><div class="d">CS Drafts (the queue), CS Threads (one row per conversation), CS KPI Summary (weekly rollups).</div></div>
+    <div class="sys"><div class="t">Writes, only on click</div><div class="n">Gmail Drafts folder</div><div class="d">The button files one draft into the customer's thread. Nothing else is ever written to Gmail.</div></div>
+  </div>
+</div>
+<p>The database behind the service is the source of truth: an append-only audit trail of every decision, draft, verification result, and the exact facts each draft used. Airtable is a one-way view on top. If a table is ever deleted, the next cycle rebuilds it.</p>
+
+<h2 id="brain">The brain: how one email becomes a draft</h2>
+<p>Two design decisions carry everything. First, <strong>the model observes, deterministic code decides.</strong> The classifier only describes the email. Plain rules turn that description into draft-or-escalate, so every escalation traces to one named rule and is testable without a model. Second, <strong>one grounding container.</strong> Every fact the drafter may use enters one structure, and the verifier checks every number, date, and claim in the draft against it. A draft stating anything it can't prove is withheld.</p>
+
+<div class="pipe">
+  <span class="n">1</span><div><strong>Scam net</strong><span class="who">deterministic, before any model</span><br>Built from a real specimen in this inbox, a "Katy Perry premiere" loan request chased from a Gmail address. Looks for impersonation marks: product-out requests around celebrity events, deadline pressure, a freemail follow-up into a professional thread, lookalikes of our own domain, banking-detail changes. One strong mark or two weak ones flag the email. <span class="stop">Flagged: no draft of any kind,</span> labeled Possible phishing with the marks listed and the verification step named. On 239 real messages: 3 flagged, none of them customers.</div>
+  <span class="n">2</span><div><strong>Classify</strong><span class="who">model call 1</span><br>Returns three things and decides nothing: a <strong>category</strong> (one of 35 scenarios, each defined by the words in its playbook entry), a <strong>risk</strong> rating, and nine true/false <strong>signals</strong>: angry or threatening, demands refund or cancel, legal/press/VIP, non-English, time-sensitive deadline, delivery dispute, asks about a money amount, photos already attached, possible scam. It also extracts any order number and the customer's country exactly as she wrote it, never inferred.</div>
+  <span class="n">3</span><div><strong>Route</strong><span class="who">plain code, no model</span><br>In order: risk rated high &rarr; <span class="stop">human</span>. Any hard signal (scam, anger, money amount, non-English) &rarr; <span class="stop">human</span>. Category tier human &rarr; <span class="stop">human</span>. Category needs an order number and none given &rarr; draft that asks for it. Category tier manager &rarr; draft, gated. Soft signals (refund or cancel request, deadline, delivery dispute, VIP) &rarr; keep the draft but gate it, so the human decides from a draft instead of a blank page. Anger is never softened and never exemptable.</div>
+  <span class="n">4</span><div><strong>Look up</strong><span class="who">Shopify, read-only</span><br>Order status, fulfillment, tracking, dates, line items, customer order count. Catalog and per-size stock for fit and restock questions. Per-country prices with the currency Shopify itself returns, every $0 discarded as a suppressed duplicate page. <span class="stop">A failed or ambiguous lookup always wins:</span> an order Shopify can't find goes to a human, never to the drafter's imagination.</div>
+  <span class="n">5</span><div><strong>Retrieve</strong><br>The scenario's playbook (approach and template from the CS Guide deck), the policy facts it is allowed to state, garment measurements if the style is one of the eight with specs, the whole thread so far, and the three most similar real past replies from the Sent folder as tone reference.</div>
+  <span class="n">6</span><div><strong>Draft</strong><span class="who">model call 2</span><br>Answer first, lead with the resolution, one line of warmth, the brand sign-off. A missing fact becomes a <code>______</code> blank inside an otherwise finished sentence. "Let me check and get back to you" is banned, because the person reading the draft is the one who would check.</div>
+  <span class="n">7</span><div><strong>Verify</strong><span class="who">two layers</span><br><strong>Layer 1</strong>, deterministic: every order number, tracking number, date, amount, measurement, product attribute, discount code, and weekday promise in the draft must trace back to retrieved data. <strong>Layer 2</strong>, model call 3: a narrow fact-check of the prose against the same data, catching "your order has shipped" written over a status of unfulfilled. <span class="stop">Either failing withholds the draft.</span> A verifier that couldn't run counts as a failure, never a pass. Red-teamed with ten planted fake facts: ten caught.</div>
+  <span class="n">8</span><div><strong>Voice lint</strong><span class="who">deterministic</span><br>The deck's rules as machine checks: the exact sign-off, no form-letter phrases, never tell her to contact the carrier, one exclamation point at most, one closing invitation at most, no trailing comfort sentence, no em dashes, never breaks character.</div>
+  <span class="n">9</span><div><strong>Record</strong><br>Decision, reason, rule, draft, both verification results, the facts used, all appended to the audit database. Then pushed to Airtable with the Status above.</div>
+</div>
+
+<div class="callout"><p><strong>Partial coverage is handled, not hidden.</strong> If the template only answers half the question, the drafter says so and the row is marked Draft unverified rather than pretending. If a scenario has no written policy, it is a human-tier category and the pile of those rows is the roadmap for what to document next. The system builds its own to-do list.</p></div>
+
+<h2 id="knows">What it knows, and where that came from</h2>
+<p>No model was trained or fine-tuned. The agent's competence is what it is shown, what it is forbidden, and what is checked. Every behavior is in a file you can open and change in an afternoon.</p>
+<div class="tablewrap"><table>
+<tr><th>Input</th><th>Source</th><th>Role</th></tr>
+<tr><td>Brand voice rules</td><td>Emily's brand deck, transcribed</td><td>The register: warm not gushing, lead with the resolution, one line of warmth, sign-off "Warmly, Eva".</td></tr>
+<tr><td>120 real sent replies</td><td>The inbox's own Sent folder</td><td>Cleaned to 90 usable exemplars. Each new email gets the three most similar past replies as tone reference. Their facts are quarantined by construction: an exemplar's order number isn't in the retrieved data, so copying it fails verification.</td></tr>
+<tr><td>35 scenario playbooks</td><td>The CS Guide deck, plus gaps found in real mail</td><td>Per-scenario approach and template, risk tier (18 draft, 13 manager, 4 human), which Shopify fields it needs, which signals it may exempt. All 19 inbound scenarios in the deck produce a draft.</td></tr>
+<tr><td>Policy facts</td><td>The published refund policy on aflalonyc.com, the Notion SOPs, the deck, each fact with its source</td><td>What a draft may state about returns, exchanges, damage, shipping. 14 days from ship date domestic, 7 from delivery international, the $20 and $50 fee waived for store credit, portal for clothing, email for jewelry.</td></tr>
+<tr><td>Garment specs, 8 styles</td><td>Production's spec folder</td><td>Finished measurements the drafter may quote. It may never recommend a size. Three styles withheld with the reason noted.</td></tr>
+<tr><td>Thread history</td><td>The conversation itself</td><td>The drafter sees every prior turn, so it continues conversations instead of restarting them.</td></tr>
+<tr><td>15 review lessons</td><td>LW's comments in Airtable, distilled Sep 1</td><td>Binding on every draft. Answer only what was asked. Two or three sentences for a single fact. Round figures. Hyperlink the tracking number itself. State the action taken, don't offer a menu. One confirming question at the end when input is needed. No reply to messages that need none.</td></tr>
+</table></div>
+<h3>Two sources of truth that disagreed</h3>
+<p>Building the knowledge base surfaced five places where the deck and Notion contradicted each other. Two changed what a reply says about money (when the return window starts, and a restocking fee the deck never mentions). Both were resolved on Aug 26 by the policy published on the website, which now wins. One remains open: the deck mandates "Warmly, Eva" and the team actually signs "Best, Eva". The lint enforces the deck until someone rules.</p>
+
+<h2 id="guard">Guardrails</h2>
+<ul>
+  <li><strong>Cannot send.</strong> No credential the service holds has a send permission. A bug cannot email a customer.</li>
+  <li><strong>Cannot mark read, archive, or move.</strong> The inbox is opened in examine mode and fetched with peek, so the server itself refuses to set the read flag. There is no label or move operation in the code.</li>
+  <li><strong>Writes to Gmail only on a click.</strong> The loop writes to Airtable. The button files exactly one draft into one thread when a person asks.</li>
+  <li><strong>Every fact is traced.</strong> Two-layer verification, red-teamed, with a verifier failure counted as a failure.</li>
+  <li><strong>Money is gated.</strong> Prices draft at manager tier with the market disclaimer. Refund and cancellation requests get a gated draft. Angry ones and anything rated high risk go to a person with no draft.</li>
+  <li><strong>Scams get silence.</strong> Flagged mail receives no draft at all, and the marks are listed for the human.</li>
+  <li><strong>Old mail is never touched.</strong> The service drafts only customer messages received after the moment it first started, so the backlog of answered or dead threads is left alone.</li>
+  <li><strong>Each email once.</strong> Dedup is in the database, independent of anything in Gmail, so a half-failed pass can't produce a duplicate on retry.</li>
+</ul>
+
+<h2 id="kpi">The two KPIs</h2>
+<p>Both are measured from the mail itself. No tagging, no macro, no discipline required from whoever is answering. The unit is a conversation, identified by Gmail's own thread id, so it survives subject edits. Both numbers are derived from timestamps on every sync, never stored, so a late reply changes them correctly.</p>
+<div class="tablewrap"><table>
+<tr><th>KPI</th><th>Definition</th><th>Rules that keep it honest</th></tr>
+<tr><td><strong>First response time</strong></td><td>Her first message in the thread to our first reply after it.</td><td>The clock starts at her message, not at an outbound we sent first. Only the first handoff counts. An unanswered thread is blank, never zero.</td></tr>
+<tr><td><strong>Resolution time</strong></td><td>Her first message to our last reply, counted only once our reply is the last word.</td><td>If she writes back, the thread reopens and resolution goes blank again while the clock keeps running from her first message. A closing thank-you from her counts as "Resolved, confirmed"; our reply standing last counts as "Resolved, answered". "Thanks, but it still hasn't arrived" closes nothing.</td></tr>
+</table></div>
+<ul>
+  <li><strong>Roll up on CS Threads, not CS Drafts.</strong> Drafts has a row per message, so a three-message thread would count three times.</li>
+  <li><strong>Scope to customer mail.</strong> The Is CS checkbox excludes recruiting, vendor pitches, invoices, and newsletters. A fast reply to a sales pitch flatters no number.</li>
+  <li><strong>Median leads, p90 sets the target.</strong> Response times are long-tailed. p90 answers "how bad does it get".</li>
+  <li><strong>Weekly rows follow the 4-5-4 retail calendar</strong> (fiscal year from Dec 28, 2025, labels like AUG-D), plus All time and Right now. Each row also splits first response by whether the customer wrote during business hours, Mon to Fri, 9 to 7 ET.</li>
+  <li><strong>Calendar hours, not business hours.</strong> A Friday 6pm email answered Monday 9am reads as 63 hours, which is the customer's real wait.</li>
+  <li><strong>Known distortions.</strong> Threads that started before the import window report from mid-thread. A reply sent from someone's personal address is invisible and reads as unanswered.</li>
+</ul>
+
+<h2 id="airtable">The Airtable base</h2>
+<p>Base <code>app86LogrXQQ1hno9</code>. Four tables, all written by the service, re-pushed in place on every cycle.</p>
+<div class="tablewrap"><table>
+<tr><th>Table</th><th>One row per</th><th>Key</th><th>What it's for</th></tr>
+<tr><td><strong>CS Drafts</strong></td><td>customer email needing action</td><td>Message ID</td><td>The queue. Her email, Status, Priority, Draft, Why, Category, Risk, Flags, Order #, Info Available and Info Source (could the agent get the facts, and from exactly where), thread KPIs for context, Open in Gmail, and the three human fields: Comments + Feedback, Sent, Final Sent Text.</td></tr>
+<tr><td><strong>CS Threads</strong></td><td>conversation</td><td>Thread ID</td><td>The SLA table. Opened, First Response At, Resolved At, hours for both, Open hours for the ageing queue, four-way Thread Status, Category, Is CS. Build views here: ageing queue, SLA breaches, most turns.</td></tr>
+<tr><td><strong>CS KPI Summary</strong></td><td>fiscal week, plus All time and Right now</td><td>Period</td><td>Conversations, answered, resolved, confirmed by customer, awaiting first reply, average, median and p90 for both KPIs, business-hours split.</td></tr>
+<tr><td><strong>Jewelry Intl Inquiries</strong></td><td>international jewelry thread</td><td>Thread ID</td><td>Built Sep 11 for the international pricing campaign: who asked for prices, whether they got one, country, pieces, evidence.</td></tr>
+</table></div>
+
+<h2 id="railway">How it runs on Railway</h2>
+<div class="tablewrap"><table>
+<tr><th>Every 10 minutes</th><th>What happens</th></tr>
+<tr><td>1. Import</td><td>Reads the last 30 days of Inbox and Sent over IMAP, read-only, up to 300 messages per folder. New messages are added to the database; known ones are skipped.</td></tr>
+<tr><td>2. Draft</td><td>Finds conversations where the customer is waiting (her message is the newest, or our last reply promised to come back and never did). Keeps only messages received after go-live. Runs the brain on up to 20 of them.</td></tr>
+<tr><td>3. Push</td><td>Syncs CS Drafts, CS Threads, and CS KPI Summary. Rows with a draft get their Open in Gmail link.</td></tr>
+</table></div>
+<h3>The Open in Gmail button, exactly</h3>
+<p>The link carries the email's message id and a signature made with a secret only the service knows, so a copied link can't be edited to target another message. When clicked, the service looks up that email's newest draft in its database, signs into the mailbox with the same app password the import uses, and files the draft into Gmail's Drafts folder with the customer's message id in its reply headers. That is what makes Gmail show it inside her thread. The service then redirects your browser to that thread. A placed draft is remembered, so a second click just reopens the thread. An edited draft is a new draft. If anything fails, the page shows the text to copy.</p>
+<p>There is no Google OAuth anywhere in this. The app password reads mail and places drafts, and can do nothing else the code doesn't ask for.</p>
+<h3>Settings on the service</h3>
+<div class="tablewrap"><table>
+<tr><th>Variable</th><th>Meaning</th></tr>
+<tr><td><code>ANTHROPIC_API_KEY</code></td><td>The model.</td></tr>
+<tr><td><code>SHOPIFY_API_KEY</code> / <code>_SECRET</code> / <code>SHOPIFY_SHOP_DOMAIN</code></td><td>The read-only Shopify app <code>sanskriti-cs</code>. A 24-hour token is minted on demand.</td></tr>
+<tr><td><code>AIRTABLE_TOKEN</code> / <code>AIRTABLE_BASE</code></td><td>Where results go.</td></tr>
+<tr><td><code>AFLALO_IMAP_USER</code> / <code>AFLALO_IMAP_PASSWORD</code></td><td>The shared inbox and its Gmail App Password. The password is the one thing not yet set.</td></tr>
+<tr><td><code>AFLALO_DB</code></td><td><code>/data/cs.db</code>, on a persistent Railway disk so dedup and the audit trail survive redeploys.</td></tr>
+<tr><td><code>CS_PORTAL_URL</code> / <code>CS_LINK_SECRET</code></td><td>The service's public address, and the secret that signs the Open in Gmail links.</td></tr>
+<tr><td><code>CS_INTERVAL_MIN</code></td><td>Minutes between cycles. 10. Set to 0 to serve only the button.</td></tr>
+<tr><td><code>CS_IMPORT_DAYS</code> / <code>CS_IMPORT_LIMIT</code> / <code>CS_DRAFT_LIMIT</code></td><td>30 days, 300 messages per folder, 20 drafts per cycle.</td></tr>
+<tr><td><code>CS_GOLIVE_AT</code></td><td>Optional. Only mail received after this is drafted. Unset means the moment the service first started, which it remembers.</td></tr>
+</table></div>
+
+<h2 id="handoff">Handoff</h2>
+<h3>Identifiers</h3>
+<div class="tablewrap"><table>
+<tr><th>Thing</th><th>Id or address</th></tr>
+<tr><td>Service address</td><td><code>https://agent-production-0a9f.up.railway.app</code> (health at <code>/health</code>)</td></tr>
+<tr><td>Railway project</td><td><code>aflalo-cs-agent</code> · <code>c692afbb-44fe-42d9-9a36-0b13234171c7</code>, workspace AFLALO Projects</td></tr>
+<tr><td>Railway service</td><td><code>agent</code> · <code>e9113a16-595b-4c05-ad59-20b35de303d4</code>, volume <code>cs-agent-db</code> at <code>/data</code></td></tr>
+<tr><td>GitHub repo</td><td><code>aflalo-nyc/CS-Agent</code>, branch <code>main</code></td></tr>
+<tr><td>Airtable base</td><td><code>app86LogrXQQ1hno9</code> · CS Drafts <code>tblxRoRJ1e85QqLhx</code> · CS Threads <code>tbldbarxwaLq74qyh</code> · CS KPI Summary <code>tblnHWu6ag5n9KToO</code></td></tr>
+<tr><td>Shopify app</td><td><code>sanskriti-cs</code> on aflalo.myshopify.com, read-only scopes</td></tr>
+<tr><td>Shared inbox</td><td>aflalo@aflalonyc.com, read over IMAP with an App Password</td></tr>
+</table></div>
+
+<h3>Where to change what</h3>
+<div class="tablewrap"><table>
+<tr><th>You want to change</th><th>Edit</th></tr>
+<tr><td>A reply template, how a scenario is handled, or its risk tier</td><td><code>knowledge/categories.yaml</code>. One entry per scenario. The classifier's definition of a category is the words in its entry, so to sharpen a boundary, sharpen the words.</td></tr>
+<tr><td>What escalates to a human</td><td><code>aflalo_cs/router.py</code>. The plain-code rules. Every escalation names its rule.</td></tr>
+<tr><td>A policy fact a draft may state</td><td><code>knowledge/policy_facts.yaml</code>. Every fact carries its source.</td></tr>
+<tr><td>The voice rules</td><td><code>knowledge/brand_voice.md</code> and <code>aflalo_cs/voice_lint.py</code>.</td></tr>
+<tr><td>Garment measurements</td><td><code>knowledge/sizing.yaml</code>. Add a spec and the drafter quotes it.</td></tr>
+<tr><td>Scam detection marks</td><td><code>aflalo_cs/phishing.py</code>.</td></tr>
+<tr><td>Lessons from review</td><td>Write in Comments + Feedback in Airtable, then run <code>python -m aflalo_cs.cli learn</code> locally. It rewrites <code>knowledge/lessons.md</code>.</td></tr>
+<tr><td>Pause drafting</td><td>Railway → agent → Variables → set <code>CS_INTERVAL_MIN</code> to 0. The button keeps working.</td></tr>
+<tr><td>Rotate the inbox password</td><td>Make a new App Password at Google, set <code>AFLALO_IMAP_PASSWORD</code> on Railway.</td></tr>
+</table></div>
+
+<h3>Changing the code</h3>
+<div class="callout warn">
+<p><strong>A push to GitHub does not deploy by itself.</strong> Railway runs a snapshot of the code from its last build. After any commit and push that should go live, kick a build by hand: Railway → <code>aflalo-cs-agent</code> → <code>agent</code> → Deploy. Watch the log for <code>cs agent on …</code> and <code>agent: every 10 min</code>, then open <code>/health</code>. To make pushes deploy automatically, open the service's Settings → Source and reconnect the GitHub repo with the account that owns the Railway project.</p>
+<p>Run the tests before pushing: <code>python -m pytest tests/ -q</code>. They need no API key and no network.</p>
+</div>
+
+<h3>Open items</h3>
+<ul>
+  <li><strong>Set the Gmail App Password</strong> on the Railway service. Until then every cycle logs "cycle skipped" and nothing happens.</li>
+  <li><strong>Confirm the first placed draft</strong> lands inside the customer's thread in Gmail. The threading relies on standard reply headers and could only be tested against a fake mailbox so far.</li>
+  <li><strong>The learn step runs by hand</strong> from a laptop because it writes a file into the repo. Moving it onto Railway needs the lessons stored on the disk instead.</li>
+  <li><strong>The GitHub repo is public.</strong> No secrets are in it, but the knowledge folder holds internal policy notes and sizing specs. Make it private in the repo's Settings on GitHub.</li>
+  <li><strong>Data gaps, not code gaps:</strong> specs for Tavi Pant and Sagan jeans, preorder terms in writing, a ruling on "Warmly" versus "Best", and the Shopify scope that unlocks restock dates.</li>
+</ul>
+
+<h2 id="history">History</h2>
+<div class="nums">
+  <div class="num"><div class="v">35</div><div class="l">scenarios the brain can name</div></div>
+  <div class="num"><div class="v">9</div><div class="l">signals the classifier observes</div></div>
+  <div class="num"><div class="v">90</div><div class="l">real past replies as voice reference</div></div>
+  <div class="num"><div class="v">10 / 10</div><div class="l">planted fake facts caught</div></div>
+  <div class="num"><div class="v">173</div><div class="l">automated tests, no API key needed</div></div>
+  <div class="num"><div class="v">3 / 239</div><div class="l">real messages flagged as scams, none customers</div></div>
+</div>
+<div class="timeline">
+  <span class="d">Aug 2026</span><div><strong>Design and knowledge base.</strong> The observe-then-decide architecture, the one grounding container, the two-layer verifier, the scam net built from a real specimen. Brand voice, 26 playbooks, and policy facts extracted from the deck, Notion, and Slack. Five source conflicts found and written down.</div>
+  <span class="d">Aug 23</span><div><strong>Voice from the real corpus.</strong> 120 sent replies cleaned to 90 exemplars. Found the sign-off conflict between the deck and how the team actually writes.</div>
+  <span class="d">Aug 26</span><div><strong>Policy resolved, Shopify live.</strong> The two money conflicts settled by the website's published policy. Real order lookups against the live store.</div>
+  <span class="d">Sep 1</span><div><strong>The learn loop.</strong> LW's 11 review comments distilled into 15 binding lessons. Drafts got shorter and stopped volunteering.</div>
+  <span class="d">Sep 3</span><div><strong>KPIs by fiscal week.</strong> First response and resolution defined from the mail itself, rolled up by 4-5-4 retail week with the business-hours split, after Sarena asked for rows that name their period.</div>
+  <span class="d">Sep 11</span><div><strong>Re-import and jewelry campaign.</strong> Fresh drafting over the real inbox. The Jewelry Intl Inquiries table built for the international pricing push.</div>
+  <span class="d">Sep 30</span><div><strong>Deployed, Airtable-first.</strong> Decided not to auto-write drafts into Gmail. Built the always-on service with the go-live cutoff and the one-click Open in Gmail button, 173 tests, deployed to Railway. Waiting on the inbox password.</div>
+</div>
+
+<p class="foot">Maintained by Sanskriti Akhoury. The complete explanation for the team is PROJECT.md in the repo; design decisions and the conflicts log are under knowledge/. Last updated Sep 30, 2026.</p>
+</main>
+</body>
+</html>

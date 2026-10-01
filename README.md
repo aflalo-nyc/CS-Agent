@@ -22,6 +22,12 @@ Gmail ──poll──► dedup ──► [hard safety net] ──► classifier
                                       (needs-human)                         + label + log
 ```
 
+## The project page
+
+`docs/AGENT.html` is the one-page explanation: using the Airtable queue, the system map, how
+the brain decides, what it knows, the KPIs, the Railway service, and handoff. Also published at
+https://claude.ai/artifact/ST8X4AJgMxbmV7wYEFsujt
+
 ## Quick start
 
 ```bash
