@@ -69,6 +69,8 @@ SCHEMA: list[dict[str, Any]] = [
     {"name": "Sent", "type": "checkbox", "note": "Tick when you send it. Drives the quality metric."},
     {"name": "Sent At", "type": "dateTime", "note": "Auto-filled or manual."},
     {"name": "Final Sent Text", "type": "multilineText", "note": "Paste what you actually sent if you edited it. The diff against Draft is how we measure whether drafts are getting better."},
+    {"name": "Open in Gmail", "type": "url",
+     "note": "One click: puts this Draft into the Gmail thread as a normal draft, then opens that thread. Empty when there is no draft. Clicking twice does not make two drafts."},
 ]
 
 # One row per CONVERSATION. The KPIs are properties of a thread, not of a message, and
@@ -525,6 +527,51 @@ class Airtable:
         return len(create), len(update)
 
 
+def sync_store(token: str, base: str, store, link_for=None):
+    """Push the local store up: CS Drafts, CS Threads, CS KPI Summary. Yields one summary
+    line per table. `link_for(message_id) -> url` fills the Open in Gmail column for rows
+    that carry a draft (the service passes it; the CLI leaves it empty)."""
+    from datetime import datetime, timezone
+
+    drafts = Airtable(token, base)
+    threads = Airtable(
+        token, base, THREADS_TABLE, THREAD_SCHEMA, key_field="Thread ID",
+        description="One row per CS conversation, with first response and resolution time. "
+        "SLA rollups belong here, not on CS Drafts — that table has a row per message.",
+    )
+    for at in (drafts, threads):
+        tid = at.create_table()
+        added = at.ensure_fields(tid)
+        if added:
+            yield f"table '{at.table}': added fields " + ", ".join(added)
+
+    def row_fn(r: dict) -> dict:
+        f = _row_from(r)
+        f["Open in Gmail"] = link_for(r["message_id"]) if (link_for and f.get("Draft")) else None
+        return f
+
+    rows = store.review_rows()
+    created, updated = drafts.push(rows, row_fn=row_fn)
+    yield f"pushed {len(rows)} rows to '{TABLE}' — {created} created, {updated} updated"
+
+    kpis = store.thread_kpis(limit=100000)
+    created, updated = threads.push(kpis, row_fn=_thread_row_from)
+    yield f"pushed {len(kpis)} conversations to '{THREADS_TABLE}' — {created} created, {updated} updated"
+
+    summary_table = Airtable(
+        token, base, KPI_TABLE, KPI_SCHEMA, key_field="Period",
+        description="Customer-service SLA. One row per 4-5-4 fiscal week of conversation "
+        "starts (AUG-D etc.), plus All time totals and the Right now backlog. First response "
+        "is also split by whether the customer wrote during business hours (Mon–Fri 9–7 ET). "
+        "Updated on every sync.",
+    )
+    tid = summary_table.create_table()
+    summary_table.ensure_fields(tid)
+    when = datetime.now(timezone.utc).isoformat()
+    created, updated = summary_table.push(_kpi_rows(store.kpi_summary(), when), row_fn=lambda r: r)
+    yield f"pushed KPI rows to '{KPI_TABLE}' — {created} created, {updated} updated"
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--schema", action="store_true", help="print the tables to create")
@@ -598,29 +645,8 @@ def main() -> int:
 
     from .store import Store
 
-    store = Store(config.DB_PATH)
-    rows = store.review_rows()
-    created, updated = drafts.push(rows)
-    print(f"pushed {len(rows)} rows to '{TABLE}' — {created} created, {updated} updated")
-
-    kpis = store.thread_kpis(limit=100000)
-    created, updated = threads.push(kpis, row_fn=_thread_row_from)
-    print(f"pushed {len(kpis)} conversations to '{THREADS_TABLE}' — {created} created, {updated} updated")
-
-    summary_table = Airtable(
-        token, base, KPI_TABLE, KPI_SCHEMA, key_field="Period",
-        description="Customer-service SLA. One row per 4-5-4 fiscal week of conversation "
-        "starts (AUG-D etc.), plus All time totals and the Right now backlog. First response "
-        "is also split by whether the customer wrote during business hours (Mon–Fri 9–7 ET). "
-        "Updated on every sync.",
-    )
-    tid = summary_table.create_table()
-    summary_table.ensure_fields(tid)
-    from datetime import datetime, timezone
-
-    when = datetime.now(timezone.utc).isoformat()
-    created, updated = summary_table.push(_kpi_rows(store.kpi_summary(), when), row_fn=lambda r: r)
-    print(f"pushed KPI rows to '{KPI_TABLE}' — {created} created, {updated} updated")
+    for line in sync_store(token, base, Store(config.DB_PATH)):
+        print(line)
     return 0
 
 
