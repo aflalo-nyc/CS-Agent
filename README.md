@@ -22,6 +22,23 @@ Gmail ──poll──► dedup ──► [hard safety net] ──► classifier
                                       (needs-human)                         + label + log
 ```
 
+## Status (2026-10-02): deployed, waiting on one value
+
+Everything is built, tested (173 tests), and running on Railway as the `agent` service in the
+`aflalo-cs-agent` project. Drafts go to Airtable only; the Open in Gmail link places a draft
+into the Gmail thread on demand. **One thing is left to complete:**
+
+1. Create a Gmail **App Password** for aflalo@aflalonyc.com at
+   https://myaccount.google.com/apppasswords (16 letters, shown once; the account's normal
+   password is refused because 2-step verification is on).
+2. Set it on Railway: `agent` service → Variables → `AFLALO_IMAP_PASSWORD`. The service
+   redeploys itself and the first cycle runs within a minute.
+3. Check the deploy log for `agent: imported … messages (read-only)` and the Airtable
+   `CS Drafts` table for the new `Open in Gmail` column.
+
+Until then every cycle logs `AFLALO_IMAP_PASSWORD not set — cycle skipped` and nothing happens.
+Full handoff: `docs/AGENT.html`.
+
 ## The project page
 
 `docs/AGENT.html` is the one-page explanation: using the Airtable queue, the system map, how
