@@ -23,7 +23,9 @@ for aflalo@aflalonyc.com. Google only lets you make one after signing in to that
 1. **Make the App Password.** Sign in as aflalo@aflalonyc.com → https://myaccount.google.com/apppasswords
    → name it `cs-agent` → copy the 16 letters (shown once).
 2. **Put it on Railway.** `aflalo-cs-agent` → `agent` → Variables → `AFLALO_IMAP_PASSWORD`. The
-   service redeploys on its own.
+   service redeploys on its own. The name must match exactly, because the agent ignores any other
+   name. There is no sender variable: the agent never sends, and the inbox it reads is
+   `AFLALO_IMAP_USER`, which defaults to aflalo@aflalonyc.com.
 3. **Check it ran.** Within 10 minutes the deploy log shows `agent: imported … messages (read-only)`
    and new rows appear in Airtable → CS Drafts.
    Only mail that arrives *after* this first run is drafted. The cutoff is stamped on the first real
