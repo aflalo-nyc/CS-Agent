@@ -167,15 +167,16 @@ def policy_digest() -> str:
         f"- The prepaid return label is emailed after the portal submission ({p['returns']['label']}).",
         "- Out-of-window returns (internal rule): the portal cannot make a label past the "
         f"window. Up to {p['returns']['out_of_window_grace_days']} days past it we accept for "
-        "STORE CREDIT (the team makes the label by hand); beyond that we do not allow the "
-        "return. State the outcome, never the internal cutoff number.",
+        "STORE CREDIT; beyond that we do not allow the return. When a late return is approved "
+        "the team reopens the return window on her order and she uses the same portal link. "
+        "State the outcome, never the internal cutoff number.",
         f"- Exchanges: {'offered' if p['exchanges']['offered'] else 'NOT offered'}. {p['exchanges']['guidance']}",
         f"- Final sale items are not returnable and not eligible for store credit.",
         f"- Damaged box must be reported with photos within {p['damage']['box_damaged_report_window_days']} days of delivery.",
         f"- When the error is ours: {p['damage']['our_error_remedy']}.",
         "- We do not have welcome or first-time-buyer discount codes.",
         "- We do not offer custom jewelry.",
-        f"- Every email closes with exactly: {p['fixed_signoff']}",
+        f"- Every email closes with exactly these two lines:\n{p['fixed_signoff']}",
         "",
         "Prices: a price MAY be stated when it appears in RETRIEVED DATA (it comes live from",
         "Shopify), always with the market disclaimer. A price from anywhere else is forbidden.",

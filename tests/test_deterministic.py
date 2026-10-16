@@ -1462,7 +1462,7 @@ def test_business_templates_carry_no_facts_and_no_commitments():
         c = knowledge.get_category(cat)
         assert c.get("customer_facing") is False, cat
         tpl = c.get("template") or ""
-        assert tpl and "Warmly, Eva" in tpl, cat
+        assert tpl and "Warmly,\nEva" in tpl, cat
         assert not re.search(r"\d", tpl), f"{cat} template contains a number"
 
 
@@ -2149,7 +2149,8 @@ def test_the_html_alternative_links_the_tracking_number_itself():
 
 def test_out_of_window_grace_rule_is_in_the_policy_digest():
     d = knowledge.policy_digest()
-    assert "the team makes the label by hand" in d
+    assert "reopens the return window" in d
+    assert "by hand" not in d
     assert "beyond that we do not allow" in d
     assert "never the internal cutoff" in d
 
@@ -2279,3 +2280,30 @@ def test_fill_in_blanks_and_markdown_links_are_not_placeholders():
     assert PLACEHOLDER_RE.findall("The updated ship date is ______.") == []
     assert PLACEHOLDER_RE.findall("start it through [our returns portal](https://returns.aflalonyc.com)") == []
     assert PLACEHOLDER_RE.findall("your order shipped on [date]") == ["[date]"]
+
+
+def test_signoff_is_two_lines_even_when_the_model_writes_one():
+    from aflalo_cs.draft import _parse
+
+    d = _parse({"draft_text": "Hi Bunny,\n\nHere is the link.\n\nWarmly, Eva", "flag_for_review": False})
+    assert d.text.endswith("Warmly,\nEva")
+    assert voice_lint.lint(d.text) == []
+
+
+def test_no_dot_reply_carrier_billing_is_noise():
+    from aflalo_cs.inbox_import import NOISE_SENDERS
+
+    for s in ("no.reply@upsbilling.ups.com", "noreply@dhl.com", "no-reply@x.com",
+              "donotreply@fedex.com", "do-not-reply@bank.com"):
+        assert NOISE_SENDERS.search(s), s
+    assert not NOISE_SENDERS.search("Nora Plyer <nora@gmail.com>")
+
+
+def test_ava_return_rules_are_encoded():
+    late = knowledge.get_category("out_of_window_return")
+    assert "reopened the return window" in late["template"]
+    assert "by hand" not in late["template"]
+    label = knowledge.get_category("return_label_not_received")
+    assert label["tier"] == "manager" and label["gate"] == "action"
+    assert "attached your prepaid return\nlabel" in label["template"]
+    assert "sorry" in label["template"]

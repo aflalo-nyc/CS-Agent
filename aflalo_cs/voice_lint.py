@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import re
 
-SIGNOFF = "Warmly, Eva"
+SIGNOFF = "Warmly,\nEva"
 _SIGNOFF_RE = re.compile(r"warmly,\s*\n?\s*eva\s*$", re.IGNORECASE)
 
 # The em dash is a tell: the real sent corpus doesn't use it, drafts kept reaching for it.

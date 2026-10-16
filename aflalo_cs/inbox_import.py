@@ -54,7 +54,7 @@ THRID_RE = re.compile(rb"X-GM-THRID (\d+)")
 NOISE_SUBJECTS = re.compile(r"^\s*\[AFLALO\]\s+Order\s+#?\d+\s+placed by", re.IGNORECASE)
 
 NOISE_SENDERS = re.compile(
-    r"noreply|no-reply|notification|mailer-daemon|postmaster|@shopify\.com|@slack\.com|"
+    r"no[._-]?reply|do[._-]?not[._-]?reply|notification|mailer-daemon|postmaster|@shopify\.com|@slack\.com|"
     r"@notion\.so|@google\.com|@klaviyo|@stripe\.com|calendar-",
     re.IGNORECASE,
 )

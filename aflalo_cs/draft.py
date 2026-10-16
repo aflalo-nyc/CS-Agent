@@ -7,6 +7,8 @@ it is backed by a real check in verify.py rather than trusted on its own.
 
 from __future__ import annotations
 
+import re
+
 import json
 
 from . import knowledge
@@ -46,7 +48,7 @@ Absolute rules:
 2b. If the scenario needs her order number and she didn't include one: the answer IS
    asking for the order number (one question), plus whatever you can answer without it.
    Do not guess at order state you cannot see.
-3. Close with exactly: Warmly, Eva
+3. Close with exactly two lines: "Warmly," then "Eva" on the line below it.
 3b. If earlier turns are shown, you are continuing a conversation, not starting one. Pick up
    where it left off — no reintroducing yourself, no repeating what she was already told.
 4. Never tell her to contact the carrier herself. We own it.
@@ -153,5 +155,11 @@ def build_draft(
     )
 
 
+# Ava's ruling (2026-10-15): the sign-off is two lines, "Warmly," then "Eva". The model
+# still writes it on one line now and then, so it is fixed here rather than trusted.
+_ONE_LINE_SIGNOFF_RE = re.compile(r"(?im)^([ \t]*)warmly,[ \t]*eva[ \t]*$")
+
+
 def _parse(raw: dict) -> Draft:
-    return Draft(text=raw["draft_text"].strip(), flag_for_review=bool(raw["flag_for_review"]))
+    text = _ONE_LINE_SIGNOFF_RE.sub(r"\1Warmly,\n\1Eva", raw["draft_text"].strip())
+    return Draft(text=text, flag_for_review=bool(raw["flag_for_review"]))

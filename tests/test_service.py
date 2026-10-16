@@ -113,3 +113,85 @@ def test_latest_draft_reads_newest_text(tmp_path):
     row = service.latest_draft(db, "m1@x")
     assert row["draft_text"] == "second" and row["sender"] == "ana@example.com"
     assert service.latest_draft(db, "nope") is None
+
+
+def _drafted(store, mid, thread, decision, draft="Hi Ana,\n\nWarmly,\nEva"):
+    from aflalo_cs.models import Outcome
+
+    store.record(Outcome(message_id=mid, decision=decision, reason="", triggered_by="category",
+                         category="where_is_my_order", draft_text=draft), thread_id=thread)
+
+
+def test_new_drafts_are_filed_into_gmail_once(tmp_path):
+    from aflalo_cs.models import Decision
+
+    db = str(tmp_path / "cs.db")
+    store = Store(db)
+    since = service.gmail_drafts_since(db)
+    later = "2999-01-01T10:00:00+00:00"
+    store.save_inbox([
+        _msg("old@x", "t0", "2026-01-01T10:00:00+00:00"),           # before the switch
+        _msg("ready@x", "t1", later),
+        _msg("check@x", "t2", later),
+        _msg("none@x", "t3", later),                                # no draft
+        _msg("t4-first@x", "t4", "2999-01-01T09:00:00+00:00"),      # superseded in its thread
+        _msg("t4-second@x", "t4", later),
+    ])
+    assert since < later
+    _drafted(store, "old@x", "t0", Decision.DRAFT)
+    _drafted(store, "ready@x", "t1", Decision.DRAFT)
+    _drafted(store, "check@x", "t2", Decision.DRAFT_UNVERIFIED)
+    _drafted(store, "none@x", "t3", Decision.NEEDS_HUMAN, draft=None)
+    _drafted(store, "t4-first@x", "t4", Decision.DRAFT)
+    _drafted(store, "t4-second@x", "t4", Decision.NEEDS_MANAGER_APPROVAL)
+
+    filed = []
+
+    def fake_place(db_path, row, **kw):
+        filed.append(row["message_id"])
+        with service._db(db_path) as c:
+            c.execute("INSERT INTO gmail_drafts_placed VALUES (?,?,?)", (row["message_id"], "h", "now"))
+        return "placed"
+
+    lines = service.place_new_drafts(store, imap_user="u", imap_password="p", place=fake_place)
+    assert sorted(filed) == ["check@x", "ready@x", "t4-second@x"]
+    assert len(lines) == 3
+    # next cycle: nothing new to file
+    assert service.place_new_drafts(store, imap_user="u", imap_password="p", place=fake_place) == []
+    assert len(filed) == 3
+
+
+def test_answered_thread_gets_no_gmail_draft(tmp_path):
+    from aflalo_cs.models import Decision
+
+    db = str(tmp_path / "cs.db")
+    store = Store(db)
+    service.gmail_drafts_since(db)
+    store.save_inbox([
+        _msg("q@x", "t1", "2999-01-01T10:00:00+00:00"),
+        _msg("a@x", "t1", "2999-01-01T10:05:00+00:00", direction="outbound", sender="aflalo@aflalonyc.com"),
+    ])
+    _drafted(store, "q@x", "t1", Decision.DRAFT)
+    lines = service.place_new_drafts(store, imap_user="u", imap_password="p",
+                                     place=lambda *a, **k: pytest.fail("answered thread was filed"))
+    assert lines == []
+
+
+def test_one_failed_append_does_not_stop_the_rest(tmp_path):
+    from aflalo_cs.models import Decision
+
+    db = str(tmp_path / "cs.db")
+    store = Store(db)
+    service.gmail_drafts_since(db)
+    store.save_inbox([_msg("a@x", "t1", "2999-01-01T10:00:00+00:00"),
+                      _msg("b@x", "t2", "2999-01-01T11:00:00+00:00")])
+    _drafted(store, "a@x", "t1", Decision.DRAFT)
+    _drafted(store, "b@x", "t2", Decision.DRAFT)
+
+    def flaky(db_path, row, **kw):
+        if row["message_id"] == "b@x":
+            raise RuntimeError("imap down")
+        return "placed"
+
+    lines = service.place_new_drafts(store, imap_user="u", imap_password="p", place=flaky)
+    assert any("could not file" in l for l in lines) and any("placed" in l for l in lines)

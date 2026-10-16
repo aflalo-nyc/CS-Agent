@@ -315,6 +315,16 @@ def print_schema() -> None:
     )
 
 
+def queue_status(r: dict) -> str:
+    """The Status column. Also decides which drafts the service files into Gmail."""
+    # A resolved conversation's row is done, whatever its outcome was at the time —
+    # fossils ("No draft" verdicts on threads the team has since answered, thank-you
+    # messages processed before closure detection) otherwise sit in the queue forever.
+    if str(r.get("thread_status") or "").startswith("Resolved") or _is_closing_ack_body(r):
+        return "Thread resolved"
+    return STATUS_FROM_LABEL.get(r.get("label_applied") or "", "No draft")
+
+
 def _row_from(r: dict) -> dict[str, Any]:
     signals = json.loads(r.get("signals") or "{}")
     return {
@@ -323,15 +333,7 @@ def _row_from(r: dict) -> dict[str, Any]:
         "From": (r.get("sender") or "")[:250],
         "Subject": (r.get("subject") or "")[:250],
         "Her Email": (r.get("body") or "")[:95000],
-        # A resolved conversation's row is done, whatever its outcome was at the time —
-        # fossils ("No draft" verdicts on threads the team has since answered, thank-you
-        # messages processed before closure detection) otherwise sit in the queue forever.
-        "Status": (
-            "Thread resolved"
-            if str(r.get("thread_status") or "").startswith("Resolved")
-            or _is_closing_ack_body(r)
-            else STATUS_FROM_LABEL.get(r.get("label_applied") or "", "No draft")
-        ),
+        "Status": queue_status(r),
         "Priority": _priority(r),
         "Draft": r.get("draft_text") or "",
         "Why": r.get("reason") or "",

@@ -5,7 +5,9 @@
 One cycle, in order:
   1. IMPORT   read INBOX + Sent over IMAP, read-only (inbox_import.fetch_readonly) → SQLite
   2. DRAFT    run the existing Pipeline against the local copy (StoredMailbox) for customer
-              messages received after go-live; drafts land in SQLite, never in Gmail
+              messages received after go-live; drafts land in SQLite
+  2b. GMAIL   with CS_DRAFTS_TO_GMAIL=1, file each new draft into her Gmail thread as an
+              ordinary draft (place_new_drafts), so the inbox owner works from Gmail
   3. PUSH     sync CS Drafts / CS Threads / CS KPI Summary to Airtable (airtable.sync_store)
 
 Routes:
@@ -18,7 +20,14 @@ Routes:
 The link in Airtable carries an HMAC of the message id (CS_LINK_SECRET) so a leaked row can't
 be turned into a draft-for-any-message endpoint. Placing a draft uses the same IMAP app
 password as the import: APPEND to [Gmail]/Drafts. No Google OAuth, no send scope — the only
-thing this process can add to the mailbox is a draft, and only when a person clicks.
+thing this process can add to the mailbox is a draft. Without CS_DRAFTS_TO_GMAIL that happens
+only when a person clicks; with it, the cycle files drafts itself (2026-10-16, Ava's inbox
+moved off Fyxer drafts). Nothing is ever sent.
+
+Which drafts the cycle files: Ready to send, Needs approval and Draft unverified rows (the
+Airtable Status), received after the switch was first turned on (service_meta
+'gmail_drafts_since', so the backlog is never filed), newest message per thread only, and
+never twice for the same message. A thread the team has already answered is skipped.
 
 Go-live cutoff: the first time the service starts it records the moment (service_meta
 'golive_at'); only customer messages received after that are drafted, so the backlog of
@@ -160,6 +169,11 @@ def run_cycle(store: Store, *, imap_user: str, imap_password: str, out=print) ->
     else:
         out(f"agent: nothing new since go-live ({since[:19]})")
 
+    # 2b. file the new drafts into Gmail
+    if os.environ.get("CS_DRAFTS_TO_GMAIL") == "1":
+        for line in place_new_drafts(store, imap_user=imap_user, imap_password=imap_password):
+            out("agent: " + line)
+
     # 3. push to Airtable, with the button link on every row that has a draft
     token, base = os.environ.get("AIRTABLE_TOKEN"), os.environ.get("AIRTABLE_BASE")
     if not (token and base):
@@ -173,7 +187,8 @@ def run_cycle(store: Store, *, imap_user: str, imap_password: str, out=print) ->
 def cycle_loop(store: Store) -> None:
     minutes = float(os.environ.get("CS_INTERVAL_MIN", "10"))
     pw = os.environ.get("AFLALO_IMAP_PASSWORD", "")
-    print(f"agent: every {minutes:g} min, inbox={IMAP_USER}, drafts go to Airtable only", flush=True)
+    where = "Gmail + Airtable" if os.environ.get("CS_DRAFTS_TO_GMAIL") == "1" else "Airtable only"
+    print(f"agent: every {minutes:g} min, inbox={IMAP_USER}, drafts go to {where}", flush=True)
     while True:
         if not pw:
             print("agent: AFLALO_IMAP_PASSWORD not set — cycle skipped (forms/health still up)", flush=True)
@@ -268,6 +283,53 @@ def place_draft(db_path: str, row: dict, *, imap_user: str, imap_password: str, 
             (row["message_id"], h, datetime.now(timezone.utc).isoformat()),
         )
     return "placed"
+
+
+# ------------------------------------------------------------------ drafts straight to Gmail
+
+GMAIL_STATUSES = ("Ready to send", "Needs approval", "Draft unverified")
+
+
+def gmail_drafts_since(db_path: str) -> str:
+    """ISO timestamp the auto-filing was first switched on. Persisted, like golive_at."""
+    with _db(db_path) as c:
+        row = c.execute("SELECT value FROM service_meta WHERE key='gmail_drafts_since'").fetchone()
+        if row:
+            return row["value"]
+        now = datetime.now(timezone.utc).isoformat()
+        c.execute("INSERT INTO service_meta (key, value) VALUES ('gmail_drafts_since', ?)", (now,))
+        return now
+
+
+def place_new_drafts(store: Store, *, imap_user: str, imap_password: str, place=None) -> list[str]:
+    """File every new, still-open draft into Gmail. Returns one log line per draft."""
+    from .airtable import queue_status
+
+    place = place or place_draft
+    since = gmail_drafts_since(store.path)
+    with _db(store.path) as c:
+        placed = {r["message_id"] for r in c.execute("SELECT message_id FROM gmail_drafts_placed")}
+    rows = sorted(store.review_rows(), key=lambda r: r.get("received_at") or "", reverse=True)
+    seen_threads: set[str] = set()
+    lines: list[str] = []
+    for r in rows:
+        tid = r.get("thread_id") or r["message_id"]
+        if tid in seen_threads:
+            continue  # an older message in a thread that has a newer one: its draft is stale
+        seen_threads.add(tid)
+        if (r.get("received_at") or "") < since or r["message_id"] in placed:
+            continue
+        status = queue_status(r)
+        if status not in GMAIL_STATUSES or not r.get("draft_text"):
+            continue
+        row = latest_draft(store.path, r["message_id"])
+        try:
+            result = place(store.path, row, imap_user=imap_user, imap_password=imap_password)
+        except Exception as exc:  # noqa: BLE001 — one failed append must not stop the cycle
+            lines.append(f"gmail: could not file draft for {r['message_id']}: {exc}")
+            continue
+        lines.append(f"gmail: {result} draft ({status}) for {r['message_id']} -> {r.get('sender')}")
+    return lines
 
 
 PAGE = """<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
