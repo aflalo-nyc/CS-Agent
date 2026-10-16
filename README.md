@@ -22,21 +22,18 @@ Gmail ──poll──► dedup ──► [hard safety net] ──► classifier
                                       (needs-human)                         + label + log
 ```
 
-## Status (2026-10-02): deployed, waiting on one value
+## Status (2026-10-16): live, drafts go straight into Gmail
 
-Everything is built, tested (173 tests), and running on Railway as the `agent` service in the
-`aflalo-cs-agent` project. Drafts go to Airtable only; the Open in Gmail link places a draft
-into the Gmail thread on demand. **One thing is left to complete:**
+Running on Railway as the `agent` service in the `aflalo-cs-agent` project since 2026-10-05.
+Every 10 minutes it reads aflalo@ (read-only), drafts new customer mail, and, with
+`CS_DRAFTS_TO_GMAIL=1` on the service, files each draft into the customer's Gmail thread as an
+ordinary draft. Nothing is ever sent. Ready to send, Needs approval and Draft unverified drafts
+are filed; a thread the team already answered is skipped. Airtable `CS Drafts` keeps every row
+with its Status and Why, and the Open in Gmail link now just opens the thread.
 
-1. Create a Gmail **App Password** for aflalo@aflalonyc.com at
-   https://myaccount.google.com/apppasswords (16 letters, shown once; the account's normal
-   password is refused because 2-step verification is on).
-2. Set it on Railway: `agent` service → Variables → `AFLALO_IMAP_PASSWORD`. The service
-   redeploys itself and the first cycle runs within a minute.
-3. Check the deploy log for `agent: imported … messages (read-only)` and the Airtable
-   `CS Drafts` table for the new `Open in Gmail` column.
-
-Until then every cycle logs `AFLALO_IMAP_PASSWORD not set — cycle skipped` and nothing happens.
+Fyxer's reply drafting must stay OFF on aflalo@ (two drafts per thread otherwise). Fyxer's
+categories are separate and can stay on. To stop filing drafts into Gmail, remove
+`CS_DRAFTS_TO_GMAIL` and the service goes back to drafting into Airtable only.
 Full handoff: `docs/AGENT.html`.
 
 ## The project page

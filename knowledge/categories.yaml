@@ -33,7 +33,8 @@ categories:
       It's estimated to arrive by {estimated_delivery}. If anything changes before then,
       I'll reach out directly.
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
   preorder_ship_timing:
     tier: draft
@@ -48,7 +49,8 @@ categories:
       Your order is estimated to ship {estimated_ship_date}. You'll receive tracking as soon
       as it's on its way. If anything changes before then, I'll reach out to you directly.
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
   order_status_shipping_timeline:
     tier: draft
@@ -63,7 +65,8 @@ categories:
       Your order is estimated to ship {estimated_ship_date}. You'll receive tracking as soon
       as it's on its way. If anything changes before then, I'll reach out to you directly.
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
   delayed_package_carrier:
     tier: manager
@@ -86,7 +89,8 @@ categories:
 
       Thank you for your patience. I'll be in touch soon.
 
-      Warmly, Eva
+      Warmly,
+      Eva
     note: |
       Action gate: the deck's template says "I've already been in touch with them directly" —
       that is a real action a human must take before this goes out, same class as shipping a
@@ -104,7 +108,8 @@ categories:
       Final sale items aren't eligible for return or store credit. we communicate this at
       checkout and want it to always be clear upfront.
 
-      Warmly, Eva
+      Warmly,
+      Eva
     note: "Draftable because it commits nothing and states no amount. If she pushes back, the angry/refund signals escalate it on the next message."
 
   damaged_item:
@@ -131,14 +136,17 @@ categories:
       replacement shipped out to you right away, along with a prepaid return label for the
       damaged piece.
 
-      Warmly, Eva
+      Warmly,
+      Eva
     note: "Draftable because it only requests a photo. If she already attached photos, the classifier sets photos_already_attached and it becomes an action-required reship."
 
   return_how_to:
     tier: draft
     needs_order: false
     approach: |
-      She's asking how to make a return (not disputing eligibility). LW's standard reply,
+      She's asking how to make a return. Not a portal problem: no label after she submitted
+      the form is return_label_not_received; the portal refusing her is out_of_window_return.
+      Not disputing eligibility. LW's standard reply,
       verbatim shape: point her to the returns portal link, offer questions, stop. For
       JEWELRY returns the portal doesn't apply: she emails us instead, so say that when
       the piece is jewelry.
@@ -150,7 +158,8 @@ categories:
 
       If you have any questions, please let me know!
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
   fit_question:
     tier: draft
@@ -180,7 +189,8 @@ categories:
 
       {measurement}: ______
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
     note: |
       Measurements come from knowledge/sizing.yaml (Production's spec folder) via the same
@@ -203,7 +213,8 @@ categories:
       If you tell me a little more about what you loved about it, I'll keep an eye out for you
       as new collections arrive.
 
-      Warmly, Eva
+      Warmly,
+      Eva
     note: |
       Deliberately drops the deck's "here are 2 alternatives with links" line — we have no
       product-recommendation retrieval, so naming alternatives would be invented. read_products
@@ -224,7 +235,8 @@ categories:
       budget, whatever is relevant. I can pull a few pieces that feel closest. I'm also happy
       to send additional photos and full details on anything that catches your eye.
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
   general_policy_question:
     tier: draft
@@ -239,25 +251,52 @@ categories:
     gate: policy
     needs_order: true
     fields: [line_items, item]
+    manager_reason: "approve the late return, then reopen the return window on her order in the returns portal before sending"
     approach: |
-      Team rule (LW): up to about a week past the window we accept the return for store
-      credit; well past it we do not allow the return. The portal cannot make her a label
-      either way, the team creates it by hand. If RETRIEVED DATA has the ship date, lead
-      with the outcome the rule gives. Never state the internal cutoff to her, never open
-      with the policy or 'unfortunately'. The approver confirms the dates and the remedy.
+      She wants to return past the return window, or says the returns portal link won't let
+      her create the return. Team rule (LW): up to about a week past the window we accept the
+      return for store credit; well past it we do not allow the return. When the approver
+      accepts it, the team reopens the return window on her order in the portal (AV,
+      2026-10-16) and she uses the same link again, so the draft says the window is reopened
+      and gives the link. Never say a label is being made by hand, and never say a remedy
+      was already agreed unless an earlier turn shows it. Don't guess why the portal refused
+      her. If RETRIEVED DATA has the ship date, lead with the outcome the rule gives. Never
+      state the internal cutoff to her, never open with the policy or 'unfortunately'. The
+      approver confirms the dates and the remedy.
     template: |
       Hi {first_name},
 
       Since we're past our return window we aren't able to process a refund, but we'd love to
-      offer you store credit instead.
+      offer you store credit instead. I've reopened the return window on your order, so you
+      can process your return via this link:
+      https://returns.aflalonyc.com/#/
 
-      Just let us know and we'll get that set up for you right away.
-
-      Warmly, Eva
+      Warmly,
+      Eva
     note: |
       Store credit is a policy exception the deck says needs manager approval. The template
       deliberately omits the window length and the word "full" — both are unresolved
       (CONFLICTS.md #1, #2). The approver fills those in.
+
+  return_label_not_received:
+    tier: manager
+    gate: action
+    needs_order: false
+    manager_reason: "attach her return label to the Gmail draft before sending"
+    approach: |
+      She submitted the returns portal form (or tried to) and her return label never came.
+      Ava's rule (AV, 2026-10-16): say the label is attached to this email and apologize once
+      for the trouble with the portal. Don't ask her to resubmit the form, don't explain how
+      the portal works, don't promise a date. If she named a drop-off deadline, the attached
+      label answers it.
+    template: |
+      Hi {first_name},
+
+      I'm so sorry for the trouble with our returns portal. I've attached your prepaid return
+      label to this email.
+
+      Warmly,
+      Eva
 
   expedited_shipping_repeat:
     tier: manager
@@ -273,7 +312,8 @@ categories:
 
       You'll receive updated tracking as soon as it's on its way.
 
-      Warmly, Eva
+      Warmly,
+      Eva
     note: |
       Deck: EVERY expedited request needs manager approval before committing. estimated_delivery
       is deliberately NOT a field — the stored date is the PRE-upgrade estimate, so quoting it
@@ -294,7 +334,8 @@ categories:
       I'll send an invoice over to you now. as soon as it's paid, I'll create your new
       shipping label right away and confirm with updated tracking.
 
-      Warmly, Eva
+      Warmly,
+      Eva
     note: "Cost is deliberately absent — the drafter has no quoted rate and may not invent one. The approver adds it."
 
   wrong_item_received:
@@ -311,7 +352,8 @@ categories:
       I'm sending the correct {item} to you now via overnight shipping, and a return label is
       attached to send back the incorrect item.
 
-      Warmly, Eva
+      Warmly,
+      Eva
     note: "Action gate: a human must actually book the overnight reship and attach the label file before sending. The deck's 'Thank you, Eva' sign-off is treated as a typo — see CONFLICTS.md #5."
 
   delayed_package_aflalo:
@@ -327,7 +369,8 @@ categories:
 
       Your order is shipping out today via overnight delivery. I appreciate your patience, and
 
-      Warmly, Eva
+      Warmly,
+      Eva
     note: "Action gate: the new date and new tracking number don't exist until a human books the overnight. Those lines are omitted from the template rather than guessed; the approver adds them."
 
   lost_in_transit:
@@ -348,7 +391,8 @@ categories:
 
       Please let me know if I can help further.
 
-      Warmly, Eva
+      Warmly,
+      Eva
     hard_no: true
     note: "Action gate: a human must actually initiate the replacement. New tracking number and date are omitted rather than invented."
 
@@ -366,7 +410,8 @@ categories:
 
       If you'd ever like a hand choosing something down the line, I'm always here.
 
-      Warmly, Eva
+      Warmly,
+      Eva
     note: |
       Action gate: the deck is explicit — "the email says 'has been issued', so make it true."
       A human processes the refund in Shopify, then sends. The refund amount and the business-day
@@ -389,7 +434,8 @@ categories:
       Once it arrives you're welcome to return it, and I've attached a prepaid return label so
       it's ready whenever you are. I'll process your refund as soon as it's back with us.
 
-      Warmly, Eva
+      Warmly,
+      Eva
     note: "Action gate: a human attaches the label file. Return window length omitted (CONFLICTS.md #1)."
 
   cancelled_unable_to_fulfill:
@@ -407,7 +453,8 @@ categories:
       I'm really sorry about this. if you'd like help finding an alternative, I'm happy to
       pull some options for you.
 
-      Warmly, Eva
+      Warmly,
+      Eva
     note: |
       Usually proactive outreach rather than an inbound reply, but it also arrives as a response
       to "why hasn't this shipped." Action gate: the refund must be real before sending.
@@ -429,7 +476,8 @@ categories:
 
       The moment something new lands, it goes up on the site first.
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
   out_of_stock_restocking:
     tier: manager
@@ -446,7 +494,8 @@ categories:
       That piece is currently sold out. I've added you to the waitlist, so you'll be
       notified as soon as it's back in stock.
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
       Thank you for reaching out. that piece is currently sold out.
 
@@ -456,7 +505,8 @@ categories:
       In the meantime, if you'd like, I can share a couple of pieces in a similar spirit that
       are available now.
 
-      Warmly, Eva
+      Warmly,
+      Eva
     note: |
       Action gate: the deck is explicit — "Add her to the waitlist yourself before replying —
       the email says 'I've added you', not 'you can sign up'." We have no waitlist API, so a
@@ -480,7 +530,8 @@ categories:
       and place a new order for the size you'd like. If you take the refund as store credit,
       the return fee is waived entirely.
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
   discount_code_request:
     tier: draft
@@ -496,7 +547,8 @@ categories:
       We don't offer welcome or promotional codes. our pricing stays consistent for
       everyone, always.
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
   alteration_or_resize_request:
     tier: draft
@@ -514,7 +566,8 @@ categories:
       Alterations aren't a service we offer, and one thing worth knowing: altered pieces
       become final sale, so they can no longer be returned.
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
   messenger_delivery_request:
     tier: manager
@@ -535,7 +588,8 @@ categories:
       If timing is tight, tell me the date you're working toward and I'll see what's
       possible on our end.
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
   jewelry_price_inquiry:
     tier: manager
@@ -571,7 +625,8 @@ categories:
       For delivery to {price_country}, the {product} is {price}. Duties, taxes, and
       shipping can vary by destination, and checkout will show your final total.
 
-      Warmly, Eva
+      Warmly,
+      Eva
     note: |
       The price comes from Shopify contextualPricing per country at draft time — zeros (the
       price-suppressed duplicate pages) are discarded before anything is quoted, and if
@@ -601,7 +656,8 @@ categories:
       Thank you for reaching out and for thinking of AFLALO. I've passed your note along to
       the right person on our team. if there's interest, they'll be in touch directly.
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
   vendor_or_agency_pitch:
     tier: draft
@@ -618,7 +674,8 @@ categories:
       Thanks for reaching out. This isn't something we're exploring, but we appreciate you
       thinking of AFLALO and wish you the best with it.
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
   partnership_or_wholesale:
     tier: draft
@@ -636,12 +693,14 @@ categories:
       Thanks for reaching out, I am adding Lani, our head of wholesale, who will get back
       to you!
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
       Thank you for reaching out. I've shared your note with our team, and if it's
       something we can explore, the right person will get back to you directly.
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
   billing_or_invoice:
     tier: draft
@@ -657,7 +716,8 @@ categories:
 
       Thank you. received, and I've passed it to the right person on our side.
 
-      Warmly, Eva
+      Warmly,
+      Eva
 
   automated_or_newsletter:
     tier: human

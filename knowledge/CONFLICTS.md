@@ -108,3 +108,7 @@ Found 2026-08-23 while turning the real sent replies into voice exemplars: the c
 lint) mandates "Warmly, Eva". The deck is the designated source of truth so lint still
 enforces "Warmly" — but every human edit that flips it back to "Best" will show up in the
 draft-vs-sent diff. Whoever owns the deck should rule: update the deck, or tell the team.
+
+**Resolution (2026-10-15):** Ava, who runs the aflalo@ inbox, ruled in review: "Warmly," on one
+line and "Eva" on the next. `policy_facts.yaml` → `fixed_signoff`, every template, and
+`draft._parse` (which fixes a one-line sign-off the model still writes) all carry it.
