@@ -1,5 +1,7 @@
 # AFLALO — CS inbox drafting pipeline (Phase 1)
 
+**Current state and what's left: [STATUS.md](STATUS.md)**
+
 Takes the shared customer service inbox from "a person writes every reply" to "most replies
 are drafted in Aflalo's voice, a human reads-to-send or lightly edits."
 
@@ -219,10 +221,4 @@ in the design doc §4, and it needs the held-out set of real past tickets we don
 
 ## Next
 
-1. Get a ruling on the two blocking conflicts — unblocks 4 categories.
-2. ~~Shopify Admin API~~ — **done.** `doctor --probe` reports
-   `app 'sanskriti-cs' on 'AFLALO' — 6 scopes, all required ones present`, and real order
-   lookups return real facts.
-3. Export ~100–150 anonymized past threads; hold out 20–30 for the benchmark.
-4. Republish the Italy jewelry sheet on an AFLALO URL, then build the remaining 11 regions.
-5. Point at the real inbox, draft-only, after the mock-inbox exit criteria pass.
+See [STATUS.md](STATUS.md).
