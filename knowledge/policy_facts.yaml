@@ -25,8 +25,11 @@ returns:
   refund_processing_days: 10           # business days from receipt, bank-dependent
   out_of_window_rule: |
     INTERNAL (LW, 2026-09-01): the portal cannot create a label once the window has
-    passed. Up to ~1 week past the window we accept the return for STORE CREDIT (label
-    made manually by the team); more than a week past, we do not allow the return.
+    passed. Up to ~1 week past the window we accept the return for STORE CREDIT; more
+    than a week past, we do not allow the return.
+    (AV, 2026-10-16): when we approve a late return, the team reopens the return window
+    on her order in the returns portal and she makes the return through the same link.
+    No label is made by hand.
   out_of_window_grace_days: 7
   source: "aflalonyc.com/policies/refund-policy (fetched 2026-08-26); Notion / Return Policy (2026-05-08)"
 
@@ -96,5 +99,5 @@ jewelry_pricing:
   price_disclaimer: "Duties, taxes, shipping, and timing can vary by destination and time of purchase. Checkout shows the final total for your location."
   source: "Notion / Jewelry Pricing Primer — International Customers (Italy pilot, 2026-07-20); Shopify contextualPricing (2026-08-21)"
 
-fixed_signoff: "Warmly, Eva"
+fixed_signoff: "Warmly,\nEva"
 support_inbox: aflalo@aflalonyc.com
